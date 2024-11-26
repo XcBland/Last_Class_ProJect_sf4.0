@@ -4,8 +4,9 @@ import { USER_SETTING, USER_SETTING_AD } from "../constants";
 import { AdvertClass } from "../models";
 const defaultAd = {
   showAd: true,
-  adTime: 10,
+  adTime: 5,
   adImg: $r('app.media.start'),
+  adUrl: 'pages/Index'
 } as AdvertClass
 export class UserSettingClass {
   // 功能一：实现广告数据的存储
