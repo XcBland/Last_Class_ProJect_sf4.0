@@ -1,6 +1,6 @@
 import { preferences } from "@kit.ArkData";
 import { Context } from "@kit.AbilityKit";
-import { USER_SETTING, USER_SETTING_AD } from "../constants";
+import { TOKEN_KEY, USER_SETTING, USER_SETTING_AD } from "../constants";
 import { AdvertClass } from "../models";
 const defaultAd = {
   showAd: true,
@@ -10,6 +10,7 @@ const defaultAd = {
 } as AdvertClass
 export class UserSettingClass {
   // 功能一：实现广告数据的存储
+  // 功能二: 实现用户身份的存储:  令牌:token
   context:Context
   constructor(context:Context){
     this.context = context
@@ -32,5 +33,21 @@ export class UserSettingClass {
     await adStore.put(USER_SETTING_AD,JSON.stringify(ad))
     // 刷新存储
     await adStore.flush()
+  }
+
+//   存储用户身份
+  async setUserToken(token:string){
+    const adStore = await this.getStore()
+    await adStore.put(TOKEN_KEY,token)
+    await adStore.flush()
+  }
+  /**
+   * 读取用户身份
+   * token       : 用户令牌
+   * @returns    : Promise<string>
+   */
+  async getUserToken():Promise<string>{
+    const adStore = await this.getStore()
+    return await adStore.get(TOKEN_KEY,'') as string
   }
 }

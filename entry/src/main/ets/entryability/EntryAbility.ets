@@ -40,8 +40,16 @@ export default class EntryAbility extends UIAbility {
       // 展示广告
       windowStage.loadContent('pages/Start/Start')
     }else{
+      // 判断用户是否登录,如果登录,进入首页,否则进入登录页
       // 直接进入首页
-      windowStage.loadContent('pages/Index')
+      const token = await userSetting.getUserToken()
+      if(token){
+      //   已经登陆了,进入首页
+        windowStage.loadContent('pages/Index')
+      }else{
+      // 未登录,进入登录页
+        windowStage.loadContent('pages/Login/Login')
+      }
     }
     // windowStage.loadContent('pages/Index');
   }

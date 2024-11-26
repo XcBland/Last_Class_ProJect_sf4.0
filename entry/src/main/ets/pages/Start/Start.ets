@@ -1,6 +1,9 @@
 import { AdvertClass } from '../../models'
 import { UserSettingClass } from '../../utils'
 import { router } from '@kit.ArkUI'
+import { TOKEN_KEY } from '../../constants'
+
+PersistentStorage.persistProp(TOKEN_KEY,"")
 
 @Entry
 @Component
@@ -16,9 +19,14 @@ struct Start {
     setInterval(() => {
       if(this.adObject?.adTime===0) {
         this.adObject.adTime = 0
-        // router.replaceUrl({url:this.adObject?.adUrl})
-        clearInterval(this.timer)
+        // 判断用户是否已经登陆过了,如果没有登录则需要先去登录页进行用户身份的审核
+        // 今后登录成功后,我们还会将token信息存储在PersistentStorage中,以便下次直接读取
+        // 在页面中可以直接从PersistentStorage中读取token信息,然后进行用户身份的审核
 
+        // router.replaceUrl({url:this.adObject?.adUrl})
+        // clearInterval(this.timer)
+        this.toNext()
+        return
       } else {
         this.adObject!.adTime -= 1
       }
@@ -26,7 +34,19 @@ struct Start {
     }, 1000)
   }
 
-
+  // 判断需要跳转的页面
+  toNext(){
+  //   1.从PersistentStoraget中读取token信息
+    const token = AppStorage.get<string>(TOKEN_KEY)
+  //   2.判断用户是否已经登陆过了,如果没有登录则需要先去登录页进行用户身份的审核
+    if(token){
+      router.replaceUrl({url:'pages/Index'})
+      clearInterval(this.timer)
+    }else{
+      router.replaceUrl({url:'pages/Login/Login'})
+      clearInterval(this.timer)
+    }
+  }
 
   build() {
     Stack({alignContent: Alignment.TopEnd}) {
@@ -41,7 +61,7 @@ struct Start {
         .textAlign(TextAlign.Center)
         .borderRadius(15)
         .onClick(()=>{
-          router.replaceUrl({url:this.adObject?.adUrl})
+          this.toNext()
         })
     }
     .width('100%')
