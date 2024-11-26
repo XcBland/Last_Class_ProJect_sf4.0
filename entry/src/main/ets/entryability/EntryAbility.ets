@@ -1,8 +1,8 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { AdvertClass } from '../models';
-import { UserSettingClass } from '../utils';
+import { AdvertClass } from '../models/advert';
+import { UserSettingClass } from '../utils/setting';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -13,45 +13,39 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
   }
 
-  async onWindowStageCreate(windowStage: window.WindowStage){
-    // Main window is created, set main page for this ability
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    // 判断是否需要加载广告
-
-    // 1.从后台服务中获取广告数据
-    // 模拟从后台服务获取广告数据,一般从后台中会存在一个运行配置,来
-    // 管理广告数据,此处仅作模拟
+  async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
+    //判断是否需要加载广告
+    //1.从后台服务中获取广告数据
+    //模拟从后台服务读取广告数据，一般后台中会存在一个运行配置来管理广告数据，我们这里模拟一下
     // const result = await new Promise<AdvertClass>((resolve, reject) => {
-    //   setTimeout(()=>{
+    //   setTimeout(() => {
     //     resolve({
     //       showAd: true,
     //       adTime: 10,
-    //       adImg:$r("app.media.start")
+    //       adImg: $r("app.media.start")
     //     } as AdvertClass)
-    //   }, 1000)
+    //   }, 500)
     // })
 
-    // 2.存储首选项
+    //2.存储首选项
     const userSetting = new UserSettingClass(this.context)
-    // userSetting.setUserAd(result)
     const result = await userSetting.getUserAd()
-    // 3.判断是否需要展示广告
-    if(result.showAd){
-      // 展示广告
-      windowStage.loadContent('pages/Start/Start')
-    }else{
-      // 判断用户是否登录,如果登录,进入首页,否则进入登录页
-      // 直接进入首页
+    //userSetting.setUserAd(result)
+
+    //3.判断是否需要展示广告
+    if (result.showAd) {
+      windowStage.loadContent('pages/Start/Start'); //展示广告页
+    } else {
+      //判断用户是否已经登录过了，如果没有登录则需要跳转到登录页
       const token = await userSetting.getUserToken()
-      if(token){
-      //   已经登陆了,进入首页
-        windowStage.loadContent('pages/Index')
-      }else{
-      // 未登录,进入登录页
-        windowStage.loadContent('pages/Login/Login')
+      if (token) {
+        //已经登录过了
+        windowStage.loadContent('pages/Index');
+      } else {
+        //还没有登录
+        windowStage.loadContent('pages/Login/Login');
       }
     }
-    // windowStage.loadContent('pages/Index');
   }
 
   onWindowStageDestroy(): void {
