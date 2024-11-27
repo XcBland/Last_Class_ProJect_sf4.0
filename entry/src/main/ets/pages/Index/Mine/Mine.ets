@@ -1,21 +1,42 @@
 import { HmCard, HmCardItem } from "../../../components"
 import { promptAction } from "@kit.ArkUI"
-import { getUserInfo } from "../../../api"
-import { UserInfo, UserInfoModel } from "../../../models"
+import { getUserInfo, getUserTaskInfo } from "../../../api"
+import { UserInfo, UserInfoModel,
+  UserTaskInfo,
+  UserTaskInfoModel,
+  UserTaskInfoParams, UserTaskInfoParamsModel } from "../../../models"
 
 @Preview
 @Component
 export struct Mine {
-  @State userInfo: UserInfoModel = new UserInfoModel({} as UserInfo)
-  aboutToAppear(){
+  @State
+  userInfo: UserInfoModel = new UserInfoModel({} as UserInfo)
+  // 本月查询数据
+  queryTaskParams:UserTaskInfoParamsModel = new UserTaskInfoParamsModel({
+    year: new Date().getFullYear().toString(),
+    month: (new Date().getMonth() + 1).toString()
+  })
+  // 本月用户数据
+  @State
+  userTaskInfo: UserTaskInfoModel = new UserTaskInfoModel({} as UserTaskInfo)
+  aboutToAppear() {
     // 页面显示时，获取用户信息
     this.getUserData()
+    this.getUserTaskData()
   }
   // 获取用户数据
   async getUserData(){
     // 将获取到的用户信息赋值给userInfo对象
     this.userInfo = await getUserInfo()
   }
+
+  // 获取本月数据类型
+  async getUserTaskData(){
+    this.userTaskInfo = await getUserTaskInfo(this.queryTaskParams)
+  }
+
+
+
   build() {
     Column() {
       //1.基本信息
@@ -61,7 +82,7 @@ export struct Mine {
           .textAlign(TextAlign.Center)
         Row() {
           Column({space:18}) {
-            Text(1000 + '')
+            Text(this.userTaskInfo.taskAmounts?.toString() || '0')
               .fontSize(18)
               .fontColor($r('app.color.text_primary'))
               .lineHeight(20)
@@ -75,7 +96,7 @@ export struct Mine {
           }
 
           Column({space:20}) {
-            Text(1000 + '')
+            Text(this.userTaskInfo.completedAmounts?.toString() || '0')
               .fontSize(18)
               .fontColor($r('app.color.text_primary'))
               .lineHeight(20)
@@ -89,7 +110,7 @@ export struct Mine {
           }
 
           Column({space:20}) {
-            Text(1000 + '')
+            Text(this.userTaskInfo.transportMileage?.toString() || '0')
               .fontSize(18)
               .fontColor($r('app.color.text_primary'))
               .lineHeight(20)
