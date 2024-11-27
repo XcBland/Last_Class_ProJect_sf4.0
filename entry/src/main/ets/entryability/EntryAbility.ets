@@ -40,7 +40,7 @@ export default class EntryAbility extends UIAbility {
       const token = await userSetting.getUserToken()
       if (token) {
         //已经登录过了
-        windowStage.loadContent('pages/Index');
+        windowStage.loadContent('pages/Index/Index');
       } else {
         //还没有登录
         windowStage.loadContent('pages/Login/Login');

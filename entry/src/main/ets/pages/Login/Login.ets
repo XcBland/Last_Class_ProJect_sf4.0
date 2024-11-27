@@ -1,7 +1,8 @@
+import { login } from '../../api';
 import { TOKEN_KEY } from '../../constants';
 import { LoginForm, LoginFormModel } from '../../models';
-import { http } from '@kit.NetworkKit';
-import axios, { AxiosRequestConfig } from '@ohos/axios';
+import { Request, UserSettingClass } from '../../utils';
+import { promptAction, router } from '@kit.ArkUI';
 
 PersistentStorage.persistProp(TOKEN_KEY, "")
 
@@ -19,6 +20,25 @@ struct Login {
     }
     return false
   }
+
+  // 实现用户登录
+  async login() {
+    try{
+      this.showLoading = true
+      const token = await login(this.accountForm)
+      AppStorage.set(TOKEN_KEY, token)
+      new UserSettingClass(getContext()).setUserToken(token)
+      this.showLoading = false
+      promptAction.showToast({ message: "登录成功", duration: 2000 })
+      router.replaceUrl({url:"pages/Index/Index"})
+    }catch (error){
+      promptAction.showToast({ message: error.message, duration: 2000 })
+    } finally {
+      this.showLoading = false
+    }
+
+  }
+
 
   build() {
     Column() {
@@ -58,6 +78,12 @@ struct Login {
         .onChange((value: string) => {
           this.accountForm.password = value
         })
+        .onSubmit(async () => {
+          // 点击登录按钮时，如果账号和密码都不为空，则调用登录接口
+          if (this.getFormValidate()) {
+            await this.login()
+          }
+        })
 
       Button() {
         Row() {
@@ -79,42 +105,9 @@ struct Login {
       .height(50)
       .margin({ top: 50 })
       .onClick(async () => {
-        this.showLoading = true
-        //调用服务器端的后台接口完成用户身份的验证
-        const loginUrl = "http://122.51.240.24:31007/driver/login/account"
-        //1.创建请求对象,注意：每次请求时都需要创建一个新的，不可复用
-        const httpRequest = http.createHttp()
-        //2.设置请求头
-        const config: http.HttpRequestOptions = {
-          header: {
-            "Content-Type": "application/json", //请求数据的类型
-            "Authorization": "" //令牌
-          },
-          method: http.RequestMethod.POST,
-          extraData: this.accountForm
+        if (this.getFormValidate()) {
+          await this.login()
         }
-        //3.发送请求
-        const res = await httpRequest.request(loginUrl, config)
-        //4.解析请求的结果
-        AlertDialog.show({ message: JSON.stringify(res) })
-
-      //   axios 请求示例
-      /*  const axiosCreate = axios.create()
-        const axiosResponse:AxiosRequestConfig = await axiosCreate.request({
-          baseURL: loginUrl,
-          url: "/driver/login/account",
-          method: "POST",
-          data: this.accountForm,
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": ""
-          }
-        })
-
-        AlertDialog.show({ message: JSON.stringify(axiosResponse.data) })*/
-        this.showLoading = false
-
-
 
       })
     }
@@ -137,12 +130,12 @@ struct Login {
   }
 }
 
-let myObj : object = new LoginFormModel({ account: "feiniao", password: "123456" } as LoginForm)
+let myObj: object = new LoginFormModel({ account: "feiniao", password: "123456" } as LoginForm)
 // 如何将一个对象转换成这种格式的字符串:account=feiniao&password=123456
-let allProp = Object.keys(myObj)   //获取对象的所有属性
+let allProp = Object.keys(myObj) //获取对象的所有属性
 let str = ""
 allProp.map(prop => {
-  if(myObj[prop]){
+  if (myObj[prop]) {
     return str += prop + "=" + myObj[prop] + "&"
   }
   return ""
