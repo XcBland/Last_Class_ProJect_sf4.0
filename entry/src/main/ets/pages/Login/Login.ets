@@ -1,5 +1,5 @@
 import { TOKEN_KEY } from '../../constants';
-import { LoginFormModel } from '../../models';
+import { LoginForm, LoginFormModel } from '../../models';
 import { http } from '@kit.NetworkKit';
 import axios, { AxiosRequestConfig } from '@ohos/axios';
 
@@ -82,7 +82,7 @@ struct Login {
         this.showLoading = true
         //调用服务器端的后台接口完成用户身份的验证
         const loginUrl = "http://122.51.240.24:31007/driver/login/account"
-        /*//1.创建请求对象,注意：每次请求时都需要创建一个新的，不可复用
+        //1.创建请求对象,注意：每次请求时都需要创建一个新的，不可复用
         const httpRequest = http.createHttp()
         //2.设置请求头
         const config: http.HttpRequestOptions = {
@@ -96,11 +96,13 @@ struct Login {
         //3.发送请求
         const res = await httpRequest.request(loginUrl, config)
         //4.解析请求的结果
-        AlertDialog.show({ message: JSON.stringify(res) })*/
+        AlertDialog.show({ message: JSON.stringify(res) })
 
-        const axiosCreate = axios.create()
+      //   axios 请求示例
+      /*  const axiosCreate = axios.create()
         const axiosResponse:AxiosRequestConfig = await axiosCreate.request({
-          url: loginUrl,
+          baseURL: loginUrl,
+          url: "/driver/login/account",
           method: "POST",
           data: this.accountForm,
           headers: {
@@ -109,7 +111,8 @@ struct Login {
           }
         })
 
-        AlertDialog.show({ message: JSON.stringify(axiosResponse.data) })
+        AlertDialog.show({ message: JSON.stringify(axiosResponse.data) })*/
+        this.showLoading = false
 
 
 
@@ -133,3 +136,22 @@ struct Login {
     .borderRadius(0)
   }
 }
+
+let myObj : object = new LoginFormModel({ account: "feiniao", password: "123456" } as LoginForm)
+// 如何将一个对象转换成这种格式的字符串:account=feiniao&password=123456
+let allProp = Object.keys(myObj)   //获取对象的所有属性
+let str = ""
+allProp.map(prop => {
+  if(myObj[prop]){
+    return str += prop + "=" + myObj[prop] + "&"
+  }
+  return ""
+})
+str = str.substring(0, str.length - 1) //去掉最后一个&
+console.log(str)
+// map是将数组中的每一项都执行一个函数，返回一个新的数组
+// join是将数组中的每一项用指定字符连接起来，返回一个字符串
+// let result = allProp.map(key => {
+//   return `${key}=${myObj[key]}`
+// }).join("&") //将数组元素用&连接起来，并替换逗号为&
+// console.log(result)
