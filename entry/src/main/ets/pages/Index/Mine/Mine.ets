@@ -31,7 +31,7 @@ export struct Mine {
   }
 
   // 获取本月数据类型
-  async getUserTaskData(){
+  async   getUserTaskData(){
     this.userTaskInfo = await getUserTaskInfo(this.queryTaskParams)
   }
 
@@ -75,7 +75,7 @@ export struct Mine {
 
       //2.本月任务
       Column({ space: 10 }) {
-        Text('-本月任务-')
+        Text(`${this.queryTaskParams.year}年${this.queryTaskParams.month}月任务数据`)
           .fontSize(16)
           .fontColor($r('app.color.text_secondary'))
           .lineHeight(20)
@@ -144,7 +144,7 @@ export struct Mine {
       //3.综合信息
       HmCard(){
         HmCardItem({leftTitle:"车辆数据",rightContent:"京A1xxxxx",showRightIcon:false})
-        HmCardItem({leftTitle:"任务数据",rightContent:"1000/2000",showRightIcon:false})
+        HmCardItem({leftTitle:"任务数据",rightContent:"20/150",showRightIcon:false})
         HmCardItem({leftTitle:"系统数据",onRightClick:()=>{promptAction.showDialog({message:"这是系统设置事件"})},showBorder:false})
       }
 /*      Column({space:20}){

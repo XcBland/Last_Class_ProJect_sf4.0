@@ -4,21 +4,24 @@ import { TOKEN_KEY } from '../constants';
 import { promptAction } from '@kit.ArkUI';
 import { UserSettingClass } from '.';
 import { ResponseData } from '../models';
+import axios, {  AxiosRequestConfig, AxiosResponse, Method } from '@ohos/axios';
 
 
 /*
  * 封装网络请求的工具
  * 实现网络请求的方法
  */
-export async function requestHttp<T>(url: string = "",
+/*export async function requestHttp<T>(url: string = "",
   method: http.RequestMethod = http.RequestMethod.GET,
   data?: object): Promise<T> {
   let urlStr = BASE_URL + url //拼接完整的url作为请求的地址
-  /*
+  */
+/*
    * 发送请求的方式: GET, POST, PUT(修改/新增), DELETE(删除)
    *  如果发送的是POST请求,携带的数据需要在extraData中设置
    *  如果发送的是GET请求,携带的数据需要在url中设置 例如: http://www.example.com/getData?id=123
    */
+/*
   // 如果今后是GET请求方式,需要处理请求的参数
   if (method === http.RequestMethod.GET) {
     if (data && Object.keys(data).length > 0) {
@@ -83,8 +86,82 @@ export async function requestHttp<T>(url: string = "",
     httpRequest.destroy()
 
   }
+}*/
+
+export async function requestHttp<T>(url: string = "",
+  method: Method = 'get',
+  data?: object): Promise<T> {
+  // if (method === 'get') {
+  //   if (data && Object.keys(data).length > 0) {
+  //     url += '?' + Object.keys(data).map(key => {
+  //       if (data[key]) {
+  //         return `${key}=${data[key]}`
+  //       }
+  //       return ''
+  //
+  //     }).join('&')
+  //   }
+  // }
+  // const urlStr = BASE_URL + url
+  // 1.创建请求
+  const axiosRequest = axios.create({
+    baseURL: BASE_URL,
+
+  })
+  // 2.设置请求头
+  const config:AxiosRequestConfig = {
+    url,
+    method,
+    headers:{
+      'Content-Type': 'application/json',
+      'Authorization': AppStorage.get<string>(TOKEN_KEY) || ''  // ||===??
+    },
+    params: method === 'get' ? data : null,             // (第二种)
+    data: method !== 'get' ? data : null, // get请求需要单独设置请求参数
+  }
+  try{
+    // 3. 发送请求
+    const res:AxiosResponse<ResponseData<T>> = await axiosRequest.request(config)
+    switch (res.status) {
+      case 401:
+        promptAction.showToast({ message: '未授权或Token过期，请重新登录' });
+        AppStorage.set(TOKEN_KEY, ''); // 清空用户令牌
+        new UserSettingClass(getContext()).setUserToken('');
+        console.log("401==>" + JSON.stringify(res));
+        return Promise.reject(new Error('未授权或Token过期，请重新登录'));
+      case 404:
+        promptAction.showToast({ message: '服务器请求的资源不存在/地址错误' });
+        return Promise.reject(new Error('服务器请求的资源不存在/地址错误'));
+      case 500:
+        promptAction.showToast({ message: '服务器内部错误' });
+        return Promise.reject(new Error('服务器内部错误'));
+      default:
+        if (res.data.code === 200) {
+          console.log("requestSuccess==>" + JSON.stringify(res.data))
+          return res.data.data as T;
+        } else {
+          promptAction.showToast({ message: res.data.message });
+          return Promise.reject(new Error(res.data.message));
+        }
+
+    }
+
+  } catch (e) {
+    promptAction.showToast({ message: JSON.stringify(e) })
+    console.log("requestError==>" + JSON.stringify(e))
+    return Promise.reject(e)
+
+  }
+  // 4.关闭请求
+  finally {
+    axiosRequest.delete(url,config)
+  }
+
 }
-export class Request{
+
+
+
+/*export class Request{
   static get<T>(url: string, data?: object):Promise<T>{
     return requestHttp<T>(url, http.RequestMethod.GET, data)
   }
@@ -96,5 +173,20 @@ export class Request{
   }
   static delete<T>(url: string, data?: object):Promise<T>{
     return requestHttp<T>(url, http.RequestMethod.DELETE, data)
+  }
+}*/
+
+export class Request{
+  static get<T>(url: string, data?: object):Promise<T>{
+    return requestHttp<T>(url, 'get', data)
+  }
+  static post<T>(url: string, data?: object):Promise<T>{
+    return requestHttp<T>(url, 'post', data)
+  }
+  static put<T>(url: string, data?: object):Promise<T>{
+    return requestHttp<T>(url, 'put', data)
+  }
+  static delete<T>(url: string, data?: object):Promise<T>{
+    return requestHttp<T>(url, 'delete', data)
   }
 }

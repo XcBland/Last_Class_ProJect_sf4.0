@@ -39,13 +39,13 @@ export class UserInfoModel implements UserInfo {
 // 封装本月任务接口的相关数据：请求数据、响应数据
 // 请求数据
 export interface UserTaskInfoParams {
-  month: string
   year: string
+  month: string
 }
 
 export class UserTaskInfoParamsModel implements UserTaskInfoParams {
-  month: string = ""
   year: string = ""
+  month: string = ""
 
   constructor(model: UserTaskInfoParams) {
     this.month = model.month
