@@ -1,31 +1,43 @@
 import { HmCard, HmCardItem } from "../../../components"
 import { promptAction } from "@kit.ArkUI"
+import { getUserInfo } from "../../../api"
+import { UserInfo, UserInfoModel } from "../../../models"
 
 @Preview
 @Component
 export struct Mine {
+  @State userInfo: UserInfoModel = new UserInfoModel({} as UserInfo)
+  aboutToAppear(){
+    // 页面显示时，获取用户信息
+    this.getUserData()
+  }
+  // 获取用户数据
+  async getUserData(){
+    // 将获取到的用户信息赋值给userInfo对象
+    this.userInfo = await getUserInfo()
+  }
   build() {
     Column() {
       //1.基本信息
       Column({ space: 10 }) {
-        Image($r('app.media.ic_avatar_driver'))
+        Image(this.userInfo.avatar||$r('app.media.ic_avatar_driver'))
           .width(70)
           .height(70)
           .borderRadius(35)
           .backgroundColor($r('app.color.white'))
-        Text('司机')
+        Text(this.userInfo.name||'司机')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor($r('app.color.white'))
           .lineHeight(25)
           .textAlign(TextAlign.Center)
-        Text("司机编号:1111111")
+        Text("司机编号:"+this.userInfo.number||"司机编号:1111111")
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
           .lineHeight(20)
           .fontColor($r('app.color.white'))
           .textAlign(TextAlign.Center)
-        Text("联系电话:13811111111")
+        Text("联系电话:"+this.userInfo.phone||"联系电话:13811111111")
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
           .lineHeight(20)
