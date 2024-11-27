@@ -20,7 +20,6 @@ struct Start {
     this.timer = setInterval(() => {
       if (this.adObj?.adTime === 0) {
         //replaceUrl / pushUrl
-        clearInterval(this.timer)
 
         //判断用户是否已经登录过了，如果没有登录则需要先去登录页进行用户身份的审核
         //今后登录成功后，我们还会将token信息存储在PersistentStorage中，在页面中是可以直接从PersistentStorage中获取数据的
@@ -41,7 +40,7 @@ struct Start {
 
     //2.判断
     if (token) {
-      router.replaceUrl({ url: "pages/Index" })
+      router.replaceUrl({ url: "pages/Index/Index" })
     } else {
       router.replaceUrl({ url: "pages/Login/Login" })
     }

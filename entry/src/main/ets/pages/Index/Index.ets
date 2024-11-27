@@ -1,22 +1,53 @@
-
+import { TabClass } from '../../models';
 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+  @State tabsData: TabClass[] = [
+    { title: '任务', name: 'task', icon: $r('app.media.ic_tab_btn_task') },
+    { title: '消息', name: 'message', icon: $r('app.media.ic_tab_btn_mess_nor') },
+    { title: '我的', name: 'mine', icon: $r('app.media.ic_tab_btn_mine_nor') }
+  ];
+
+  @State currentName: string = "task"
+
+  @Builder
+  getTabBar(item: TabClass) {
+    Column() {
+      Image(item.icon)
+        .width(24)
+        .height(24)
+        .margin({ top: 5, bottom: 5 })
+        .borderRadius(12)
+        .objectFit(ImageFit.Cover)
+        .fillColor(item.name === this.currentName ? $r('app.color.primary') : $r('app.color.text_secondary'))
+      Text(item.title)
+        .fontSize(14)
+        .fontWeight(FontWeight.Bold)
+        .textAlign(TextAlign.Center)
+        .fontColor(item.name === this.currentName ? $r('app.color.primary') : $r('app.color.text_secondary'))
+    }
+
+  }
 
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Tabs({ barPosition: BarPosition.End }) {
+      ForEach(this.tabsData, (item: TabClass, index) => {
+        TabContent() {
+          if (item.name === 'task') {
+            Text("任务组件")
+          } else if (item.name === 'message') {
+            Text("消息组件")
+          } else if (item.name === 'mine') {
+            Text("我的组件")
+          }
+        }
+        .tabBar(this.getTabBar(item))
+      })
     }
-    .height('100%')
-    .width('100%')
+    .onChange((index:number )=>{
+      this.currentName = this.tabsData[index].name
+    })
+
   }
 }
