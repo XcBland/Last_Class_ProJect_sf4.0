@@ -1,3 +1,6 @@
+import { HmCard, HmCardItem } from "../../../components"
+import { promptAction } from "@kit.ArkUI"
+
 @Preview
 @Component
 export struct Mine {
@@ -106,7 +109,12 @@ export struct Mine {
       .padding({ top: 15, bottom: 15 })
 
       //3.综合信息
-      Column({space:20}){
+      HmCard(){
+        HmCardItem({leftTitle:"车辆数据",rightContent:"京A1xxxxx",showRightIcon:false})
+        HmCardItem({leftTitle:"任务数据",rightContent:"1000/2000",showRightIcon:false})
+        HmCardItem({leftTitle:"系统数据",onRightClick:()=>{promptAction.showDialog({message:"这是系统设置事件"})},showBorder:false})
+      }
+/*      Column({space:20}){
         Row(){
           Text("车辆信息")
             .fontSize(16)
@@ -154,7 +162,7 @@ export struct Mine {
       .width('96%')
       .padding({ top: 10, bottom: 10, left: 20, right: 20 })
       .borderRadius(10)
-      .margin({top:10,left:20,right:20})
+      .margin({top:10,left:20,right:20})*/
 
 
     }
