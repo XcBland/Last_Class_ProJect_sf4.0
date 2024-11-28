@@ -1,5 +1,5 @@
 import { getTaskList } from '../../../api'
-import { HmSkeleton } from '../../../components'
+import { HmLoading, HmSkeleton } from '../../../components'
 import { TaskInfoItem, TaskInfoItemModel, TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
 import { TaskItemCard } from './TaskItemCard'
 import { promptAction } from '@kit.ArkUI'
@@ -13,21 +13,40 @@ export struct TaskList {
     pageSize: 5
   } as TaskListParams) //查询的参数
   allPage: number = 1 //总页数
-  currentPage: number = 1 //当前页数
-  loading: boolean = false //是否正在加载数据
+  @State loading: boolean = false //是否正在加载数据
 
   //获取任务列表数据
   async getTaskList() {
     const result = await getTaskList(this.queryParams)
     this.taskListData = this.taskListData.concat(result.items) //合并数据
-    this.queryParams.page++
     this.allPage = result.pages //总页数
-    this.currentPage = this.queryParams.page //当前页数
-
+    this.queryParams.page++
   }
 
-  // aboutToAppear(): void {
-  //   this.getTaskList()
+  @Builder
+  getBottomDisplay() {
+    Row() {
+      if (this.loading) {
+        Text(this.allPage < this.queryParams.page ? '没有更多数据了' : '正在加载...')
+        if (this.allPage >= this.queryParams.page) {
+          HmLoading()
+        }
+      }
+    }
+    .width('100%')
+    .height(50)
+    .justifyContent(FlexAlign.Center)
+  }
+
+  // @Builder
+  // getTopDisplay() {
+  //   Row() {
+  //     if (!this.loading) {
+  //       if (this.queryParams.page === 1 && this.taskListData.length === 0) {
+  //         HmLoading()
+  //       }
+  //     }
+  //   }
   // }
 
   build() {
@@ -35,27 +54,42 @@ export struct TaskList {
       if (this.taskListData.length === 0) {
         HmSkeleton()
       } else {
+        // ListItem() {
+        //   this.getTopDisplay()
+        // }
+
         ForEach(this.taskListData, (item: TaskInfoItemModel, index: number) => {
           ListItem() {
             TaskItemCard({ taskItemData: item })
           }
         })
+
+        ListItem() {
+          //   列表底部显示加载状态
+          this.getBottomDisplay()
+        }
       }
 
 
     }
+    .onReachStart(async () => {
+      if (this.queryParams.page > 1) {
+        this.queryParams.page = 1
+        this.taskListData = []
+        await this.getTaskList()
+      } else {
+        this.loading = true
+        await this.getTaskList()
+        this.loading = false
+      }
+    })
     .onReachEnd(async () => {
-      // this.queryParams.page++
-
-      if (this.allPage >= this.currentPage) {
+      if (this.allPage >= this.queryParams.page) {
         if (!this.loading) {
           this.loading = true //开始加载数据
           await this.getTaskList()
-          this.loading = false //加载完成
+          this.loading = this.allPage < this.queryParams.page ? true : false //如果没有更多数据了，则停止加载
         }
-      } else {
-        this.loading = false
-        promptAction.showToast({ message: '没有更多数据了' })
       }
     })
   }

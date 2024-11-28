@@ -3,3 +3,4 @@ export * from './HmCardItem';
 export * from './HMNavBar';
 export * from './HmConfirm';
 export * from './HmSkeleton';
+export * from './HmLoading';
