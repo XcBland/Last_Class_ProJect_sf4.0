@@ -3,5 +3,5 @@ import { Request, RequestAxios } from "../utils";
 
 //获取任务列表
 export const getTaskList = (params: TaskListParams) => {
-  return RequestAxios.get<TaskListData>('/tasks/list', params)
+  return Request.get<TaskListData>('/tasks/list', params)
 }

@@ -1,10 +1,22 @@
+import { TaskInfoItem, TaskInfoItemModel } from "../../../models/task"
+
 @Preview
 @Component
 export struct TaskItemCard {
+  taskItemData: TaskInfoItemModel = new TaskInfoItemModel({} as TaskInfoItem)
+
+  // 判断是否能够提货
+  getBtnEnable() {
+    if (this.taskItemData.enablePickUp) {
+      return true
+    }
+    return false
+  }
+
   build() {
     Column() {
       Row() {
-        Text("任务编号:xxxxxxxxxxxxxxxxx")
+        Text(`任务编号: ${this.taskItemData.transportTaskId}`)
           .fontWeight(FontWeight.Bold)
           .lineHeight(22)
           .fontColor($r('app.color.text_primary'))
@@ -26,7 +38,7 @@ export struct TaskItemCard {
           .borderRadius(11)
           .backgroundColor($r('app.color.text_primary'))
           .textAlign(TextAlign.Center)
-        Text("11111111")
+        Text(`${this.taskItemData.startAddress}`)
           .fontSize(16)
           .fontColor($r('app.color.text_secondary'))
           .margin({ left: 10 })
@@ -49,7 +61,7 @@ export struct TaskItemCard {
           .borderRadius(11)
           .backgroundColor($r('app.color.primary'))
           .textAlign(TextAlign.Center)
-        Text("11111111")
+        Text(`${this.taskItemData.endAddress}`)
           .fontSize(16)
           .fontColor($r('app.color.text_secondary'))
           .margin({ left: 10 })
@@ -79,7 +91,7 @@ export struct TaskItemCard {
           Text("提货时间")
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
-          Text("2022.05.04 13:00")
+          Text(`${this.taskItemData.planDepartureTime}`)
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
             .margin({ top: 5 })
@@ -99,7 +111,8 @@ export struct TaskItemCard {
           .height(30)
           .borderRadius(10)
           .fontColor($r('app.color.white'))
-          .backgroundColor($r('app.color.primary'))
+          .backgroundColor(this.getBtnEnable() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
+          .enabled(this.getBtnEnable())
 
       }
       .width("100%")
