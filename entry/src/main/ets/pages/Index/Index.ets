@@ -1,5 +1,6 @@
 import { TabClass } from '../../models';
 import { Mine } from './Mine/Mine';
+import { TaskTabs } from './Task/TaskTabs';
 
 @Entry
 @Component
@@ -36,7 +37,7 @@ struct Index {
       ForEach(this.tabsData, (item: TabClass, index) => {
         TabContent() {
           if (item.name === 'task') {
-            Text("任务组件")
+            TaskTabs()
           } else if (item.name === 'message') {
             Text("消息组件")
           } else if (item.name === 'mine') {
