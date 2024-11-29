@@ -1,8 +1,8 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { AdvertClass } from '../models/advert';
 import { UserSettingClass } from '../utils/setting';
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../constants';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -14,6 +14,19 @@ export default class EntryAbility extends UIAbility {
   }
 
   async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
+
+    // 实现全屏效果
+    windowStage.getMainWindowSync().setWindowLayoutFullScreen(true)
+    // 获取头部高度
+    const topHeight =
+      px2vp(windowStage.getMainWindowSync().getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM).topRect.height)
+    // 获取底部高度
+    const bottomHeight =
+      px2vp(windowStage.getMainWindowSync().getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height)
+    AppStorage.setOrCreate<number>(APP_TOP_HEIGHT, topHeight)
+    AppStorage.setOrCreate<number>(APP_BOTTOM_HEIGHT, bottomHeight)
+
+
     //判断是否需要加载广告
     //1.从后台服务中获取广告数据
     //模拟从后台服务读取广告数据，一般后台中会存在一个运行配置来管理广告数据，我们这里模拟一下

@@ -1,3 +1,4 @@
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants';
 import { TabClass } from '../../models';
 import { Mine } from './Mine/Mine';
 import { TaskTabs } from './Task/TaskTabs';
@@ -10,7 +11,6 @@ struct Index {
     { title: '消息', name: 'message', icon: $r('app.media.ic_tab_btn_mess_nor') },
     { title: '我的', name: 'mine', icon: $r('app.media.ic_tab_btn_mine_nor') }
   ];
-
   @State currentName: string = "task"
 
   @Builder
@@ -47,8 +47,14 @@ struct Index {
         .tabBar(this.getTabBar(item))
       })
     }
-    .onChange((index:number )=>{
+    .onChange((index: number) => {
       this.currentName = this.tabsData[index].name
+    })
+    .animation({ duration: 300, curve: Curve.EaseIn })
+    .backgroundColor("#fcfb")
+    .padding({
+      top: AppStorage.get<number>(APP_TOP_HEIGHT),
+      bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)
     })
 
   }

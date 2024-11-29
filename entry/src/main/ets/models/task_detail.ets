@@ -50,7 +50,7 @@ export interface TaskDetailInfo {
   status: number //作业状态
   driverId: string //司机id
   transportTaskId: string //运输任务id
-  startHandover: string //提货对接人
+  startHandoverName: string //提货对接人
   startHandoverPhone: string //提货对接人电话
   finishHandover: string //交付对接人
   finishHandoverPhone: string //交付对接人电话
@@ -80,7 +80,7 @@ export class TaskDetailInfoModel implements TaskDetailInfo {
   status: number = 0 //作业状态
   driverId: string = "" //司机id
   transportTaskId: string = "" //运输任务id
-  startHandover: string = "" //提货对接人
+  startHandoverName: string = "" //提货对接人
   startHandoverPhone: string = "" //提货对接人电话
   finishHandover: string = "" //交付对接人
   finishHandoverPhone: string = "" //交付对接人电话
@@ -109,7 +109,7 @@ export class TaskDetailInfoModel implements TaskDetailInfo {
     this.status = model.status
     this.driverId = model.driverId
     this.transportTaskId = model.transportTaskId
-    this.startHandover = model.startHandover
+    this.startHandoverName = model.startHandoverName
     this.startHandoverPhone = model.startHandoverPhone
     this.finishHandover = model.finishHandover
     this.finishHandoverPhone = model.finishHandoverPhone

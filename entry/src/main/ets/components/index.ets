@@ -5,3 +5,4 @@ export * from './HmConfirm';
 export * from './HmSkeleton';
 export * from './HmLoading';
 export * from './HmToggleCard';
+export * from './HmUpload';

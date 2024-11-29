@@ -55,7 +55,7 @@ struct Start {
       Text(`${this.adObj?.adTime}秒后跳过`)
         .backgroundColor($r("app.color.background_page"))
         .padding({ left: 10, right: 10 })
-        .margin({ right: 20, top: 20 })
+        .margin({ right: 20, top: 50 })
         .height(30)
         .fontSize(14)
         .borderRadius(15)
