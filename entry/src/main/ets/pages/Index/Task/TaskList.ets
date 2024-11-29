@@ -2,7 +2,6 @@ import { getTaskList } from '../../../api'
 import { HmLoading, HmSkeleton } from '../../../components'
 import { TaskInfoItem, TaskInfoItemModel, TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
 import { TaskItemCard } from './TaskItemCard'
-import { promptAction } from '@kit.ArkUI'
 
 @Component
 export struct TaskList {
@@ -14,13 +13,23 @@ export struct TaskList {
   } as TaskListParams) //查询的参数
   allPage: number = 1 //总页数
   @State loading: boolean = false //是否正在加载数据
+  @State refreshing: boolean = false //是否正在刷新数据
+  @State str: string = '下拉刷新' //刷新提示语
+
+  // @State status: RefreshStatus = RefreshStatus.Inactive //刷新状态
 
   //获取任务列表数据
-  async getTaskList() {
+  async getTaskList(append: boolean) {
     const result = await getTaskList(this.queryParams)
-    this.taskListData = this.taskListData.concat(result.items) //合并数据
     this.allPage = result.pages //总页数
+    if (append) {
+      this.taskListData = this.taskListData.concat(result.items) //合并数据
+    } else {
+      this.taskListData = result.items //更新数据
+    }
     this.queryParams.page++
+    append = true
+
   }
 
   @Builder
@@ -38,58 +47,73 @@ export struct TaskList {
     .justifyContent(FlexAlign.Center)
   }
 
-  // @Builder
-  // getTopDisplay() {
-  //   Row() {
-  //     if (!this.loading) {
-  //       if (this.queryParams.page === 1 && this.taskListData.length === 0) {
-  //         HmLoading()
-  //       }
-  //     }
-  //   }
-  // }
+  /*刷新数据*/
+  onRefresh() {
+    this.refreshing = true
+    this.taskListData = []
+    this.queryParams.page = 1
+    this.allPage = 1
+    this.getTaskList(false)
+    setTimeout(() => {
+      this.refreshing = false
+      this.loading = false
+    }, 1000)
+
+  }
 
   build() {
-    List() {
-      if (this.taskListData.length === 0) {
-        HmSkeleton()
-      } else {
-        // ListItem() {
-        //   this.getTopDisplay()
-        // }
+    Refresh({ refreshing: $$this.refreshing }) {
+      List() {
+        if (this.taskListData.length === 0) {
+          HmSkeleton()
+        } else {
 
-        ForEach(this.taskListData, (item: TaskInfoItemModel, index: number) => {
+          /*          if (this.status === RefreshStatus.Refresh) {
+                      ListItem() {
+                        Text(this.str)
+                          .fontSize(16)
+                          .fontWeight(FontWeight.Bold)
+                          .fontColor(Color.Gray)
+                      }
+                    }*/
+
+          ForEach(this.taskListData, (item: TaskInfoItemModel, index: number) => {
+            ListItem() {
+              TaskItemCard({ taskItemData: item })
+            }
+          })
+
           ListItem() {
-            TaskItemCard({ taskItemData: item })
+            //   列表底部显示加载状态
+            this.getBottomDisplay()
           }
-        })
-
-        ListItem() {
-          //   列表底部显示加载状态
-          this.getBottomDisplay()
         }
+
       }
+      .scrollBar(BarState.Off)
 
-
+      .onReachEnd(async () => {
+        if (this.allPage >= this.queryParams.page) {
+          if (!this.loading) {
+            this.loading = true //开始加载数据
+            await this.getTaskList(true)
+            this.loading = this.allPage < this.queryParams.page ? true : false //如果没有更多数据了，则停止加载
+          }
+        }
+      })
     }
-    .onReachStart(async () => {
-      if (this.queryParams.page > 1) {
-        this.queryParams.page = 1
-        this.taskListData = []
-        await this.getTaskList()
-      } else {
-        this.loading = true
-        await this.getTaskList()
-        this.loading = false
-      }
-    })
-    .onReachEnd(async () => {
-      if (this.allPage >= this.queryParams.page) {
-        if (!this.loading) {
-          this.loading = true //开始加载数据
-          await this.getTaskList()
-          this.loading = this.allPage < this.queryParams.page ? true : false //如果没有更多数据了，则停止加载
-        }
+    .onStateChange((status: RefreshStatus) => {
+      if (status === RefreshStatus.Drag) {
+        this.str = '下拉刷新'
+      } else if (status === RefreshStatus.OverDrag) {
+        this.str = '超过刷新距离，松开立即刷新'
+      } else if (status === RefreshStatus.Refresh) {
+        this.str = '正在刷新...'
+        setTimeout(() => {
+          this.onRefresh()
+        }, 3000)
+      } else if (status === RefreshStatus.Done) {
+        this.str = '刷新完成'
       }
     })
   }

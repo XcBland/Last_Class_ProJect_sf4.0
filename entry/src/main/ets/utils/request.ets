@@ -1,10 +1,10 @@
 import { BASE_URL } from '../constants/url_var';
 import { http } from '@kit.NetworkKit';
 import { TOKEN_KEY } from '../constants';
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { UserSettingClass } from '.';
 import { ResponseData } from '../models';
-import axios, {  AxiosRequestConfig, AxiosResponse, Method } from '@ohos/axios';
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from '@ohos/axios';
 
 
 /*
@@ -109,25 +109,26 @@ export async function requestHttp<T>(url: string = "",
 
   })
   // 2.设置请求头
-  const config:AxiosRequestConfig = {
+  const config: AxiosRequestConfig = {
     url,
     method,
-    headers:{
+    headers: {
       'Content-Type': 'application/json',
       'Authorization': AppStorage.get<string>(TOKEN_KEY) || ''  // ||===??
     },
-    params: method === 'get' ? data : null,             // (第二种)
+    params: method === 'get' ? data : null, // (第二种)
     data: method !== 'get' ? data : null, // get请求需要单独设置请求参数
   }
-  try{
+  try {
     // 3. 发送请求
-    const res:AxiosResponse<ResponseData<T>> = await axiosRequest.request(config)
+    const res: AxiosResponse<ResponseData<T>> = await axiosRequest.request(config)
     switch (res.status) {
       case 401:
         promptAction.showToast({ message: '未授权或Token过期，请重新登录' });
         AppStorage.set(TOKEN_KEY, ''); // 清空用户令牌
         new UserSettingClass(getContext()).setUserToken('');
         console.log("401==>" + JSON.stringify(res));
+        router.replaceUrl({ url: 'pages/Login/Login' })
         return Promise.reject(new Error('未授权或Token过期，请重新登录'));
       case 404:
         promptAction.showToast({ message: '服务器请求的资源不存在/地址错误' });
@@ -154,11 +155,10 @@ export async function requestHttp<T>(url: string = "",
   }
   // 4.关闭请求
   finally {
-    axiosRequest.delete(url,config)
+    axiosRequest.delete(url, config)
   }
 
 }
-
 
 
 /*export class Request{
@@ -176,17 +176,20 @@ export async function requestHttp<T>(url: string = "",
   }
 }*/
 
-export class Request{
-  static get<T>(url: string, data?: object):Promise<T>{
+export class Request {
+  static get<T>(url: string, data?: object): Promise<T> {
     return requestHttp<T>(url, 'get', data)
   }
-  static post<T>(url: string, data?: object):Promise<T>{
+
+  static post<T>(url: string, data?: object): Promise<T> {
     return requestHttp<T>(url, 'post', data)
   }
-  static put<T>(url: string, data?: object):Promise<T>{
+
+  static put<T>(url: string, data?: object): Promise<T> {
     return requestHttp<T>(url, 'put', data)
   }
-  static delete<T>(url: string, data?: object):Promise<T>{
+
+  static delete<T>(url: string, data?: object): Promise<T> {
     return requestHttp<T>(url, 'delete', data)
   }
 }

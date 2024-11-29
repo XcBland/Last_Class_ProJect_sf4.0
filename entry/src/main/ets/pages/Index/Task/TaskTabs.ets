@@ -65,9 +65,11 @@ struct TaskTabs {
             }
 
           }
-          .tabBar(item.title)
+
+          // .tabBar(item.title)
         })
       }
+
       .barWidth(200)
       .backgroundColor($r('app.color.background_page'))
       .animationDuration(300)
