@@ -15,6 +15,7 @@ export struct TaskList {
   @State loading: boolean = false //是否正在加载数据
   @State refreshing: boolean = false //是否正在刷新数据
   @State str: string = '下拉刷新' //刷新提示语
+  @State refreshStatus: RefreshStatus = RefreshStatus.Inactive //刷新状态
 
   // @State status: RefreshStatus = RefreshStatus.Inactive //刷新状态
 
@@ -49,6 +50,7 @@ export struct TaskList {
 
   /*刷新数据*/
   onRefresh() {
+    // this.getRefreshDisplay()
     this.refreshing = true
     this.taskListData = []
     this.queryParams.page = 1
@@ -61,8 +63,41 @@ export struct TaskList {
 
   }
 
+  /*获取刷新状态*/
+  getStatusText() {
+    switch (this.refreshStatus) {
+      case RefreshStatus.Drag:
+        return '下拉刷新'
+      case RefreshStatus.OverDrag:
+        return '超过刷新距离，松开立即刷新'
+      case RefreshStatus.Refresh:
+        return '正在刷新...'
+      case RefreshStatus.Done:
+        return '刷新完成'
+      default:
+        return ''
+    }
+  }
+
+  @Builder
+  getRefreshDisplay() {
+    Row({ space: 10 }) {
+      LoadingProgress()
+        .width(40)
+        .aspectRatio(1)
+        .color($r('app.color.text_secondary'))
+      Text(this.getStatusText())
+        .fontSize(16)
+        .fontColor($r('app.color.text_secondary'))
+    }
+    .width('100%')
+    .height(50)
+    .alignItems(VerticalAlign.Center)
+    .justifyContent(FlexAlign.Center)
+  }
+
   build() {
-    Refresh({ refreshing: $$this.refreshing }) {
+    Refresh({ refreshing: $$this.refreshing, builder: this.getRefreshDisplay() }) {
       List() {
         if (this.taskListData.length === 0) {
           HmSkeleton()
@@ -76,7 +111,9 @@ export struct TaskList {
                           .fontColor(Color.Gray)
                       }
                     }*/
-
+          // if (this.refreshStatus === RefreshStatus.Refresh) {
+          //   this.getRefreshDisplay()
+          // }
           ForEach(this.taskListData, (item: TaskInfoItemModel, index: number) => {
             ListItem() {
               TaskItemCard({ taskItemData: item })
@@ -91,7 +128,6 @@ export struct TaskList {
 
       }
       .scrollBar(BarState.Off)
-
       .onReachEnd(async () => {
         if (this.allPage >= this.queryParams.page) {
           if (!this.loading) {
@@ -103,6 +139,7 @@ export struct TaskList {
       })
     }
     .onStateChange((status: RefreshStatus) => {
+      this.refreshStatus = status
       if (status === RefreshStatus.Drag) {
         this.str = '下拉刷新'
       } else if (status === RefreshStatus.OverDrag) {

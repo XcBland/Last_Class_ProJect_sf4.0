@@ -1,4 +1,5 @@
 import { TaskInfoItem, TaskInfoItemModel } from "../../../models/task"
+import { router } from "@kit.ArkUI"
 
 @Preview
 @Component
@@ -11,6 +12,17 @@ export struct TaskItemCard {
       return true
     }
     return false
+  }
+
+  // 去提货
+  toPickUp() {
+    if (this.getBtnEnable()) {
+      router.pushUrl({
+        url: 'pages/TaskDetail/TaskDetail',
+        params: { id: this.taskItemData.id }
+      })
+
+    }
   }
 
   build() {
@@ -113,6 +125,9 @@ export struct TaskItemCard {
           .fontColor($r('app.color.white'))
           .backgroundColor(this.getBtnEnable() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
           .enabled(this.getBtnEnable())
+          .onClick(() => {
+            this.toPickUp()
+          })
 
       }
       .width("100%")
