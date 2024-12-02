@@ -2,14 +2,15 @@
  * @Auhtor DLY
  *
  */
-import { HMNavBar, HmToggleCard, HmUpload } from '../../components'
+import { HmLoading, HMNavBar, HmToggleCard, HmUpload, upLoadFile } from '../../components'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams } from '../../models/router'
-import { TaskDetailInfo, TaskDetailInfoModel } from '../../models/task_detail'
-import { getTaskDetail } from '../../api'
+import { ImageList, TaskDetailInfo, TaskDetailInfoModel } from '../../models'
+import { getTaskDetail, pickUp } from '../../api'
 import { JSON } from '@kit.ArkTS'
 import { call } from '@kit.TelephonyKit'
 import { APP_TOP_HEIGHT } from '../../constants'
+import { PickUpParamsModel } from '../../models/pick_up'
 
 @Entry
 @Component
@@ -17,6 +18,12 @@ struct TaskDetail {
   @State title: string = '任务详情'
   @State taskDetailData: TaskDetailInfoModel = new TaskDetailInfoModel({} as TaskDetailInfo)
   scroller: Scroller = new Scroller()
+  layer: CustomDialogController = new CustomDialogController({
+    builder: HmLoading({ loadingText: "数据处理中,请耐心等待" }),
+    customStyle: true,
+    alignment: DialogAlignment.Center,
+    autoCancel: true
+  })
 
   async getTaskDetail(id: string) {
     this.taskDetailData = await getTaskDetail(id)
@@ -214,8 +221,22 @@ struct TaskDetail {
   /* 提货信息 */
   @Builder
   getPikUpInfo() {
-    HmUpload({ title: "请拍照上传回单凭证" })
-    HmUpload({ title: "请拍照上传货品照片" })
+    HmUpload({
+      title: "请拍照上传回单凭证",
+      imgList: this.taskDetailData.cargoPickUpPictureList || [],
+      onListChange: (list: ImageList[]) => {
+        // 用来接收子组件传递的值
+        this.taskDetailData.cargoPickUpPictureList = list
+      }
+    })
+    HmUpload({
+      title: "请拍照上传货品照片",
+      imgList: this.taskDetailData.cargoPictureList || [],
+      onListChange: (list: ImageList[]) => {
+        // 用来接收子组件传递的值
+        this.taskDetailData.cargoPictureList = list
+      }
+    })
   }
 
   /*底部按钮*/
@@ -224,7 +245,6 @@ struct TaskDetail {
     Row() {
       Button("延迟提货")
         .type(ButtonType.Normal)
-
         .width(125)
         .height(40)
         .borderRadius(15)
@@ -236,8 +256,13 @@ struct TaskDetail {
         .borderRadius(15)
         .layoutWeight(1)
         .fontColor($r('app.color.white'))
-        .backgroundColor($r('app.color.primary_disabled'))
+        .backgroundColor(this.getPickupStatus() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
         .margin({ left: 20 })
+        .enabled(this.getPickupStatus())
+        .onClick(async () => {
+          // 1.图片上传，将本地相册中的图片上传至服务器
+          await this.btnPickUp()
+        })
     }
     .padding({
       top: 10,
@@ -251,6 +276,47 @@ struct TaskDetail {
     .backgroundColor($r('app.color.white'))
     .translate({ y: -70 })
     .position({ y: "100%" })
+
+  }
+
+  // 获取按钮的提货状态
+  getPickupStatus() {
+    if (
+      this.taskDetailData.cargoPickUpPictureList?.length > 0
+        && this.taskDetailData.cargoPictureList?.length > 0
+        && this.taskDetailData.cargoPickUpPictureList.every((item) =>!!item.url)
+        && this.taskDetailData.cargoPictureList.every((item) =>!!item.url)) {
+      return true
+    }
+    return false
+
+  }
+
+  async btnPickUp() {
+    try {
+      this.layer.open()
+      // 上传图片,获取永久的图片地址
+      const cargoPickUpPictureListUrl =
+        await upLoadFile(this.taskDetailData.cargoPickUpPictureList) // 上传凭证图片,获取永久的提货图片地址
+      const cargoPictureListUrl = await upLoadFile(this.taskDetailData.cargoPictureList) // 上传货品图片,获取永久的货品图片地址
+      // 实现提货功能
+      await pickUp(new PickUpParamsModel({
+        id: this.taskDetailData.id,
+        cargoPickUpPictureList: cargoPickUpPictureListUrl,
+        cargoPictureList: cargoPictureListUrl
+      }))
+
+      this.getTaskDetail(this.taskDetailData.id)
+
+      this.scroller.scrollEdge(Edge.Top) // 回到顶部
+
+      promptAction.showToast({ message: "提货成功", duration: 2000 })
+      this.layer.close()
+    } catch (error) {
+      promptAction.showToast({ message: "提货失败" + error.message, duration: 2000 })
+    } finally {
+      this.layer.close()
+    }
 
   }
 
