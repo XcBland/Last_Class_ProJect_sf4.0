@@ -1,7 +1,7 @@
 import { AdvertClass } from '../../models/advert'
 import { UserSettingClass } from '../../utils'
 import { router } from '@kit.ArkUI'
-import { TOKEN_KEY } from '../../constants'
+import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
 
 PersistentStorage.persistProp(TOKEN_KEY, "")
 
@@ -55,7 +55,7 @@ struct Start {
       Text(`${this.adObj?.adTime}秒后跳过`)
         .backgroundColor($r("app.color.background_page"))
         .padding({ left: 10, right: 10 })
-        .margin({ right: 20, top: 50 })
+        .margin({ right: 20, top: AppStorage.get<number>(APP_TOP_HEIGHT) })
         .height(30)
         .fontSize(14)
         .borderRadius(15)

@@ -19,6 +19,7 @@ export struct HMNavBar {
             .align(Alignment.Center)
         }
       }
+
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width('100%')
@@ -36,7 +37,7 @@ export struct HMNavBar {
           router.back()
         })
       }
-
+      
 
     }
     .backgroundColor($r('app.color.white'))

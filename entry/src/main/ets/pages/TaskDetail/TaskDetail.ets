@@ -9,6 +9,7 @@ import { TaskDetailInfo, TaskDetailInfoModel } from '../../models/task_detail'
 import { getTaskDetail } from '../../api'
 import { JSON } from '@kit.ArkTS'
 import { call } from '@kit.TelephonyKit'
+import { APP_TOP_HEIGHT } from '../../constants'
 
 @Entry
 @Component
@@ -223,7 +224,7 @@ struct TaskDetail {
     Row() {
       Button("延迟提货")
         .type(ButtonType.Normal)
-        
+
         .width(125)
         .height(40)
         .borderRadius(15)
@@ -255,9 +256,14 @@ struct TaskDetail {
 
   build() {
     Column() {
+      Row()
+        .width('100%')
+        .height(AppStorage.get<number>(APP_TOP_HEIGHT))
+        .backgroundColor($r('app.color.background_page'))
       HMNavBar({ title: this.title })
       Scroll(this.scroller) {
         Column() {
+
           HmToggleCard({ title: "基本信息" }) {
             this.getBaseContent()
           }
