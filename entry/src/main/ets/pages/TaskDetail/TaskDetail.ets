@@ -286,6 +286,15 @@ struct TaskDetail {
           .borderRadius(15)
           .backgroundColor($r('app.color.btn_gray'))
           .fontColor($r('app.color.text_primary'))
+          .onClick(() => {
+            router.pushUrl({
+              url: 'pages/Delay/Delay',
+              params: {
+                id: this.taskDetailData.id
+              }
+            })
+          })
+
         Button("提货")
           .type(ButtonType.Normal)
           .height(40)
@@ -307,6 +316,7 @@ struct TaskDetail {
           .borderRadius(15)
           .backgroundColor($r('app.color.btn_gray'))
           .fontColor($r('app.color.text_primary'))
+
         Button("交货")
           .type(ButtonType.Normal)
           .height(40)
@@ -321,13 +331,23 @@ struct TaskDetail {
             await this.btnDeliver()
           })
       } else if (this.taskDetailData.status === TaskTypeEnum.DELIVERED) {
-        Row() {
-          Button("回车登记")
-            .type(ButtonType.Normal)
-            .height(40)
-            .borderRadius(15)
-            .layoutWeight(1)
-            .width(80)
+        Column() {
+          Row() {
+            Button("回车登记")
+              .type(ButtonType.Normal)
+              .height(40)
+              .borderRadius(15)
+              .width('80%')
+              .backgroundColor($r('app.color.primary'))
+              .onClick(() => {
+                router.pushUrl({
+                  url: 'pages/CarRecord/CarRecord',
+                  params: {
+                    id: this.taskDetailData.id
+                  }
+                })
+              })
+          }
         }
         .width('100%')
         .justifyContent(FlexAlign.Center)

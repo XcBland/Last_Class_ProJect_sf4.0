@@ -6,7 +6,7 @@ export struct HmLoading {
   @State num: number = 0;
   @State maxNumber: number = 100;
   timer: number = -1
-  hWidth: number = 40
+  hWidth: number = 300
 
   aboutToAppear(): void {
     setInterval(() => {

@@ -1,4 +1,12 @@
-import { PickUpParams, PickUpParamsModel, TaskDetailInfoModel, TaskListData, TaskListParams } from "../models";
+import {
+  CarRecordParams,
+  CarRecordParamsModel,
+  PickUpParams,
+  PickUpParamsModel,
+  TaskDetailInfoModel,
+  TaskListData,
+  TaskListParams
+} from "../models";
 import { DeliverParamsModel } from "../models/deliver";
 import { Request, RequestAxios } from "../utils";
 
@@ -22,3 +30,7 @@ export const deliver = ((params: DeliverParamsModel) => {
   return RequestAxios.post<null>(`/tasks/deliver`, params)
 })
 
+// 回车登记
+export const carRecord = ((params: CarRecordParamsModel) => {
+  return RequestAxios.post<null>(`/tasks/truckRegistration`, params)
+})

@@ -52,7 +52,7 @@ export struct TaskItemCard {
   build() {
     Column() {
       Row() {
-        Text(`任务编号: ${this.taskItemData.transportTaskId}`)
+        Text(`任务编号: ${this.taskItemData?.transportTaskId}`)
           .fontWeight(FontWeight.Bold)
           .lineHeight(22)
           .fontColor($r('app.color.text_primary'))
@@ -74,7 +74,7 @@ export struct TaskItemCard {
           .borderRadius(11)
           .backgroundColor($r('app.color.text_primary'))
           .textAlign(TextAlign.Center)
-        Text(`${this.taskItemData.startAddress}`)
+        Text(`${this.taskItemData?.startAddress}`)
           .fontSize(16)
           .fontColor($r('app.color.text_secondary'))
           .margin({ left: 10 })
@@ -97,7 +97,7 @@ export struct TaskItemCard {
           .borderRadius(11)
           .backgroundColor($r('app.color.primary'))
           .textAlign(TextAlign.Center)
-        Text(`${this.taskItemData.endAddress}`)
+        Text(`${this.taskItemData?.endAddress}`)
           .fontSize(16)
           .fontColor($r('app.color.text_secondary'))
           .margin({ left: 10 })
@@ -127,7 +127,7 @@ export struct TaskItemCard {
           Text("提货时间")
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
-          Text(`${this.taskItemData.planDepartureTime}`)
+          Text(`${this.taskItemData?.planDepartureTime}`)
             .fontSize(14)
             .fontColor($r('app.color.text_secondary'))
             .margin({ top: 5 })

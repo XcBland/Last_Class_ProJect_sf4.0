@@ -24,13 +24,12 @@ export struct TaskList {
     const result = await getTaskList(this.queryParams)
     this.allPage = result.pages //总页数
     if (append) {
-      this.taskListData = this.taskListData.concat(result.items) //合并数据
+      this.taskListData = this.taskListData.concat(result.items || []) //合并数据
     } else {
-      this.taskListData = result.items //更新数据
+      this.taskListData = result.items || [] //更新数据
     }
     this.queryParams.page++
     append = true
-
   }
 
   @Builder
@@ -40,6 +39,7 @@ export struct TaskList {
         Text(this.allPage < this.queryParams.page ? '没有更多数据了' : '正在加载...')
         if (this.allPage >= this.queryParams.page) {
           HmLoading()
+
         }
       }
     }
@@ -103,18 +103,6 @@ export struct TaskList {
           if (this.taskListData.length === 0) {
             HmSkeleton()
           } else {
-
-            /*          if (this.status === RefreshStatus.Refresh) {
-                        ListItem() {
-                          Text(this.str)
-                            .fontSize(16)
-                            .fontWeight(FontWeight.Bold)
-                            .fontColor(Color.Gray)
-                        }
-                      }*/
-            // if (this.refreshStatus === RefreshStatus.Refresh) {
-            //   this.getRefreshDisplay()
-            // }
             ForEach(this.taskListData, (item: TaskInfoItemModel, index: number) => {
               ListItem() {
                 TaskItemCard({ taskItemData: item })
