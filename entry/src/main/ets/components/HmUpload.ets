@@ -21,9 +21,9 @@ export struct HmUpload {
       urls: this.imgList.map(item => item.url), // 图片数组
       selectIndex: this.selectIndex // 默认选中第一张图片
     }),
-    customStyle: true,
-    alignment: DialogAlignment.Center,
-    autoCancel: true
+    customStyle: true, // 自定义样式
+    alignment: DialogAlignment.Center, // 居中显示
+    autoCancel: true                // 点击空白处自动关闭弹窗
   })
 
   // 弹出相册选择器
@@ -54,16 +54,26 @@ export struct HmUpload {
       Grid() {
         ForEach(this.imgList, (item: ImageList, index: number) => {
           GridItem() {
-            Image(item.url)
-              .width(95)
-              .height(95)
-              .aspectRatio(1)
-              .borderRadius(4)
-              .onClick(() => {
-                // 打开弹窗,预览图片
-                this.selectIndex = index
-                this.preview.open()
-              })
+            Stack({ alignContent: Alignment.TopEnd }) {
+              Image(item.url)
+                .width(95)
+                .height(95)
+                .aspectRatio(1)
+                .borderRadius(4)
+                .onClick(() => {
+                  // 打开弹窗,预览图片
+                  this.selectIndex = index
+                  this.preview.open()
+                })
+              Image($r('app.media.ic_btn_delete'))
+                .width(24)
+                .height(24)
+                .aspectRatio(1)
+                .onClick(() => {
+                  this.imgList.splice(index, 1)
+                  this.onListChange(this.imgList) // 触发父组件的list更新
+                })
+            }
 
           }
         })

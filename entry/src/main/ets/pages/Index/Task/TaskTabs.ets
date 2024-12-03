@@ -1,3 +1,4 @@
+import { TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
 import { TabClass } from '../../../models/tab'
 import { TaskList } from './TaskList'
 
@@ -58,7 +59,13 @@ struct TaskTabs {
               TaskList()
             } else if (item.name === "line") {
               //   在途Tab内容
-              Text(item.title)
+              TaskList({
+                queryParams: new TaskListParamsModel({
+                  status: TaskTypeEnum.LINE,
+                  page: 1,
+                  pageSize: 5
+                } as TaskListParams)
+              })
             } else {
               //   已完成Tab内容
               Text(item.title)

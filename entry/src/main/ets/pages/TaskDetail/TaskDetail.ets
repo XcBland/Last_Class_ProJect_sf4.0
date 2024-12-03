@@ -2,7 +2,7 @@
  * @Auhtor DLY
  *
  */
-import { HmLoading, HMNavBar, HmToggleCard, HmUpload, upLoadFile } from '../../components'
+import { HmLoading, HMNavBar, HmSkeleton, HmToggleCard, HmUpload, upLoadFile } from '../../components'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams } from '../../models/router'
 import { ImageList, TaskDetailInfo, TaskDetailInfoModel } from '../../models'
@@ -327,29 +327,34 @@ struct TaskDetail {
         .height(AppStorage.get<number>(APP_TOP_HEIGHT))
         .backgroundColor($r('app.color.background_page'))
       HMNavBar({ title: this.title })
-      Scroll(this.scroller) {
-        Column() {
+      if (this.taskDetailData.id) {
+        //   显示详情
+        Scroll(this.scroller) {
+          Column() {
 
-          HmToggleCard({ title: "基本信息" }) {
-            this.getBaseContent()
+            HmToggleCard({ title: "基本信息" }) {
+              this.getBaseContent()
+            }
+
+            HmToggleCard({ title: "车辆司机信息" }) {
+              this.getCarDriverInfo()
+            }
+
+            HmToggleCard({ title: "运输路线" }) {
+              this.getTransportRoute()
+            }
+
+            HmToggleCard({ title: "提货信息" }) {
+              this.getPikUpInfo()
+            }
+
           }
-
-          HmToggleCard({ title: "车辆司机信息" }) {
-            this.getCarDriverInfo()
-          }
-
-          HmToggleCard({ title: "运输路线" }) {
-            this.getTransportRoute()
-          }
-
-          HmToggleCard({ title: "提货信息" }) {
-            this.getPikUpInfo()
-          }
-
         }
-      }
-      .padding({ bottom: 120 })
+        .padding({ bottom: 120 })
 
+      } else {
+        HmSkeleton()
+      }
       this.getBottomButton()
 
     }
