@@ -51,7 +51,10 @@ struct Index {
       this.currentName = this.tabsData[index].name
     })
     .animation({ duration: 300, curve: Curve.EaseIn })
-    .backgroundColor("#fcfb")
+    .linearGradient({
+      colors: [["#fcfd", 0], ["#fcff", 0.3], ["#ffcd", 0.6], ["#fccf", 0.9], ["#cfcd", 1]],
+      direction: GradientDirection.Bottom
+    })
     .padding({
       top: AppStorage.get<number>(APP_TOP_HEIGHT),
       bottom: AppStorage.get<number>(APP_BOTTOM_HEIGHT)

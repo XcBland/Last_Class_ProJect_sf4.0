@@ -10,8 +10,9 @@ import { upLoadImage } from '../api/upload'
 @Component
 export struct HmUpload {
   title: string = ""
-  maxSelected: number = 6
-  @State selectIndex: number = 0
+  maxSelected: number = 6 // 最大选择图片数
+  @Prop canUpload: boolean = true // 是否可以上传
+  @State selectIndex: number = 0 // 选中的图片索引
   // 图片数组以及利用一个函数onListChange来触发父组件的list更新，父组件通过props接收
   @Prop imgList: ImageList[] = []
   onListChange: (list: ImageList[]) => void = () => {
@@ -65,19 +66,21 @@ export struct HmUpload {
                   this.selectIndex = index
                   this.preview.open()
                 })
-              Image($r('app.media.ic_btn_delete'))
-                .width(24)
-                .height(24)
-                .aspectRatio(1)
-                .onClick(() => {
-                  this.imgList.splice(index, 1)
-                  this.onListChange(this.imgList) // 触发父组件的list更新
-                })
+              if(this.canUpload){
+                Image($r('app.media.ic_btn_delete'))
+                  .width(24)
+                  .height(24)
+                  .aspectRatio(1)
+                  .onClick(() => {
+                    this.imgList.splice(index, 1)
+                    this.onListChange(this.imgList) // 触发父组件的list更新
+                  })
+              }
             }
 
           }
         })
-        if (this.imgList.length < this.maxSelected) {
+        if (this.imgList.length < this.maxSelected && this.canUpload) {
           GridItem() {
             Row() {
               Image($r('app.media.ic_add_img'))

@@ -1,4 +1,5 @@
 import { PickUpParams, PickUpParamsModel, TaskDetailInfoModel, TaskListData, TaskListParams } from "../models";
+import { DeliverParamsModel } from "../models/deliver";
 import { Request, RequestAxios } from "../utils";
 
 //获取任务列表
@@ -15,4 +16,9 @@ export const getTaskDetail = (id: string) => {
 export const pickUp = (params: PickUpParamsModel) => {
   return RequestAxios.post<null>('/tasks/takeDelivery', params)
 }
+
+// 交货接口
+export const deliver = ((params: DeliverParamsModel) => {
+  return RequestAxios.post<null>(`/tasks/deliver`, params)
+})
 
