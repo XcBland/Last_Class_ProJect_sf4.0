@@ -1,17 +1,41 @@
-import { TaskInfoItem, TaskInfoItemModel } from "../../../models/task"
-import { router } from "@kit.ArkUI"
+import { TaskInfoItem, TaskInfoItemModel, TaskTypeEnum } from '../../../models/task'
+import { router } from '@kit.ArkUI'
 
 @Preview
 @Component
 export struct TaskItemCard {
   taskItemData: TaskInfoItemModel = new TaskInfoItemModel({} as TaskInfoItem)
 
-  // 判断是否能够提货
+  // 获取按钮的可能性
   getBtnEnable() {
+    // 判断是否能够提货
     if (this.taskItemData.enablePickUp) {
       return true
     }
-    return false
+    // 如果是在途/交货状态，则也可以提货
+    const value = this.taskItemData.status.toString()
+    switch (value) {
+      case TaskTypeEnum.LINE.toString():
+      case TaskTypeEnum.DELIVERED.toString():
+        return true
+      default:
+        return false
+    }
+  }
+
+  // 获取按钮显示的文本
+  getBtnText() {
+    const value = this.taskItemData.status.toString()
+    switch (value) {
+      case TaskTypeEnum.WAITING.toString():
+        return "提货"
+      case TaskTypeEnum.LINE.toString():
+        return "交货"
+      case TaskTypeEnum.DELIVERED.toString():
+        return "回车登记"
+      default:
+        return ""
+    }
   }
 
   // 去提货
@@ -117,7 +141,7 @@ export struct TaskItemCard {
           bottom: 10
         })
 
-        Button("提交")
+        Button(this.getBtnText())
           .fontSize(14)
           .width(60)
           .height(30)
