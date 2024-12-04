@@ -2,25 +2,65 @@
  * @Auhtor DLY
  *
  */
-import { HmCard, HmCardItem, HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HmCard, HmCardItem, HMNavBar } from '../../components';
+import { APP_TOP_HEIGHT } from '../../constants';
 import { geoLocationManager } from '@kit.LocationKit';
+import { abilityAccessCtrl, bundleManager, common } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
 struct SelectLocation {
-  aboutToAppear(): void {
-    this.getLocation()
+  aboutToAppear() {
+    this.checkPermission()
   }
 
   // 获取位置
   getLocation() {
     try {
-      let location = geoLocationManager.getCurrentLocation();
-      AlertDialog.show({ message: '当前位置：' + JSON.stringify(location) })
+      // let location = await geoLocationManager.getCurrentLocation();
+      geoLocationManager.getCurrentLocation().then((location) => {
+        AlertDialog.show({ message: JSON.stringify(location) })
+      }).catch((err: BusinessError) => {
+        console.log(JSON.stringify(err))
+      })
     } catch (err) {
-      console.error("errCode:" + JSON.stringify(err));
+      AlertDialog.show({ message: JSON.stringify(err) })
     }
+  }
+
+  // 检查权限
+  async checkPermission() {
+    // 没有权限,向用户申请权限,有的话直接获取
+    // 1. 检查是否有权限
+    let manager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager()
+    const appInfo = bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION);
+    const status = manager.checkAccessTokenSync(appInfo.appInfo.accessTokenId, "ohos.permission.LOCATION")
+    // 2.判断是否有权限
+    if (status === abilityAccessCtrl.GrantStatus.PERMISSION_DENIED) {
+      // 未授权:需要拉起授权窗口,提示用户授权
+      const result = await manager.requestPermissionsFromUser(getContext(),
+        ["ohos.permission.LOCATION", "ohos.permission.APPROXIMATELY_LOCATION"])
+      if (result.authResults[0] !== 0) {
+        // 用户不同意
+        const context = getContext() as common.UIAbilityContext
+        context.startAbility({
+          abilityName: "com.huawei.hmos.MainAbility",
+          bundleName: "com.huawei.hmos.settings",
+          uri: "application_info_entry",
+          parameters: {
+            pushParams: appInfo.name
+          }
+        })
+      } else {
+        // 用户同意,获取位置
+        this.getLocation()
+      }
+    } else {
+      // 已授权
+      this.getLocation()
+    }
+
   }
 
   build() {
@@ -44,8 +84,9 @@ struct SelectLocation {
       .translate({
         y: -260
       })
-      .height(70)
+      .height(270)
     }
+    .backgroundColor($r('app.color.background_page'))
     .width('100%')
     .height('100%')
 
