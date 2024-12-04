@@ -1,0 +1,187 @@
+import dayjs from '@hview/dayjs'
+/**
+ * @Auhtor DLY
+ *
+ */
+import { HmCard, HmCardItem, HMNavBar, HmUpload } from '../../components'
+import { APP_TOP_HEIGHT } from '../../constants'
+import { reportExceptionParams, reportExceptionParamsModel } from '../../models/reportException'
+import { reportException } from '../../api'
+import { promptAction, router } from '@kit.ArkUI'
+import { CommonRouterParams, ExceptionType } from '../../models'
+import { HmSelectCard } from '../../components/HmSelectCard'
+
+@Entry
+@Component
+struct ExceptionReport {
+  @State
+  reportException: reportExceptionParamsModel = new reportExceptionParamsModel({} as reportExceptionParams)
+  exceptionErrorList: string[] = Object.values(ExceptionType).map(item => item)
+  @State selectIndex: number = -1
+  typeDialog: CustomDialogController = new CustomDialogController({
+    builder: HmSelectCard({
+      cardContent: () => {
+        this.getCardContent()
+      },
+      confirm: () => {
+        if (this.selectIndex !== -1) {
+          this.reportException.exceptionType = ExceptionType[this.selectIndex]
+        }
+      }
+    }),
+    autoCancel: true,
+    customStyle: true,
+    alignment: DialogAlignment.Bottom,
+
+  })
+
+  // 获取异常类型列表
+  @Builder
+  getCardContent() {
+    ForEach(this.exceptionErrorList, (item: ExceptionType, index) => {
+      this.getSingLeItem(new ExceptionItemClass(item, index))
+    })
+  }
+
+  @Builder
+  getSingLeItem(item: ExceptionItemClass) {
+    Row() {
+      Text(item.name)
+        .fontSize(14)
+        .fontWeight(400)
+        .fontColor($r('app.color.text_primary'))
+      Image(this.selectIndex === item.index ? $r('app.media.ic_radio_true') : $r('app.media.ic_radio_false'))
+        .width(20)
+        .height(20)
+        .border({ width: 1, style: BorderStyle.Dotted, color: $r('app.color.text_primary') })
+        .onClick(() => {
+          this.selectIndex = item.index
+        })
+    }
+    .width('100%')
+    .height(60)
+    .justifyContent(FlexAlign.SpaceBetween)
+    .alignItems(VerticalAlign.Center)
+    .border({ width: { bottom: 1 }, color: $r('app.color.background_divider') })
+  }
+
+  aboutToAppear(): void {
+    const params = router.getParams() as CommonRouterParams
+    if (params && params.id) {
+      this.reportException.transportTaskId = params.id
+    }
+  }
+
+  // 按钮是否可用
+  getBtnEnabled(): boolean {
+    return !!(this.reportException.exceptionTime && this.reportException.exceptionDescribe)
+  }
+
+  // 异常提交
+  async ExceptionPickUp() {
+    try {
+      await reportException(this.reportException)
+      promptAction.showToast({ message: '上报成功' })
+    } catch (e) {
+      promptAction.showToast({ message: '上报失败:' + e.message })
+    }
+  }
+
+  build() {
+    Column() {
+      Row().width('100%').height(AppStorage.get<number>(APP_TOP_HEIGHT)).backgroundColor($r('app.color.white'))
+      HMNavBar({ title: '上报异常' })
+      HmCard() {
+        HmCardItem({
+          leftTitle: '异常时间',
+          rightContent: this.reportException.exceptionTime || "请选择",
+          onRightClick: () => {
+            DatePickerDialog.show({
+              showTime: true,
+              useMilitaryTime: true,
+              alignment: DialogAlignment.Bottom,
+              onDateAccept: (date: Date) => {
+                this.reportException.exceptionTime = dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+                console.log(this.reportException.exceptionTime)
+              }
+            })
+          }
+        })
+        HmCardItem({
+          leftTitle: '上报位置', rightContent: "请选择", onRightClick: () => {
+            router.pushUrl({ url: 'pages/SelectLocation/SelectLocation' })
+          }
+        })
+        HmCardItem({
+          leftTitle: '异常类型', rightContent: "请选择", onRightClick: () => {
+            this.typeDialog.open()
+          }
+        })
+        HmCardItem({
+          leftTitle: '异常描述',
+          rightContent: "",
+          showRightIcon: false,
+          showBorder: false,
+        })
+        TextArea({ placeholder: '请输入异常描述' })
+          .maxLength(50)
+          .backgroundColor($r('app.color.background_page'))
+          .height(160)
+          .fontSize(18)
+          .margin({ top: 10, bottom: 10 })
+          .onChange((value: string) => {
+            this.reportException.exceptionDescribe = value
+          })
+          .showCounter(true) //显示字数统计
+        Row().height(10).backgroundColor($r('app.color.white'))
+
+      }
+
+      HmCard() {
+        HmUpload({
+          title: '上传图片(最多六张)',
+          maxSelected: 6,
+          imgList: this.reportException.exceptionImageList || [],
+          onListChange: (list) => {
+            this.reportException.exceptionImageList = list
+          }
+        })
+      }
+
+      Row() {
+        Button('提交')
+          .onClick(() => {
+            this.ExceptionPickUp()
+          })
+          .margin({ top: 10, bottom: 10 })
+          .width('50%')
+          .borderRadius(20)
+          .backgroundColor(this.getBtnEnabled() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
+          .type(ButtonType.Normal)
+          .height(40)
+          .enabled(this.getBtnEnabled())
+      }
+      .justifyContent(FlexAlign.Center)
+      .padding({ top: 10, bottom: 10 })
+      .width('100%')
+      .position({ y: '100%' })
+      .translate({ y: -70 })
+      .height(70)
+
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor($r('app.color.background_page'))
+
+  }
+}
+
+class ExceptionItemClass {
+  name: string = ''
+  index: number = -1
+
+  constructor(name: string, index: number) {
+    this.name = name
+    this.index = index
+  }
+}

@@ -1,8 +1,10 @@
 import {
   CarRecordParams,
   CarRecordParamsModel,
+  DelayParamsModel,
   PickUpParams,
   PickUpParamsModel,
+  reportExceptionParamsModel,
   TaskDetailInfoModel,
   TaskListData,
   TaskListParams
@@ -33,4 +35,14 @@ export const deliver = ((params: DeliverParamsModel) => {
 // 回车登记
 export const carRecord = ((params: CarRecordParamsModel) => {
   return RequestAxios.post<null>(`/tasks/truckRegistration`, params)
+})
+
+// 延迟提货
+export const delayPickUp = ((params: DelayParamsModel) => {
+  return RequestAxios.put<null>(`/tasks/delay`, params)
+})
+
+// 上报异常
+export const reportException = ((params: reportExceptionParamsModel) => {
+  return RequestAxios.post<null>(`/tasks/reportException`, params)
 })

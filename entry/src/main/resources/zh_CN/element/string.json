@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "顺风速达4.0"
+    },
+    {
+      "name": "location_permission_reason",
+      "value": "mohu_location"
+    },
+    {
+      "name": "approximate_location_permission_reason",
+      "value": "mohuaddress_location"
     }
   ]
 }

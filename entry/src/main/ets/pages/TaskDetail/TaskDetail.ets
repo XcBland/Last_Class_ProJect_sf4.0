@@ -316,6 +316,9 @@ struct TaskDetail {
           .borderRadius(15)
           .backgroundColor($r('app.color.btn_gray'))
           .fontColor($r('app.color.text_primary'))
+          .onClick(() => {
+            router.pushUrl({ url: 'pages/ExceptionReport/ExceptionReport', params: { id: this.taskDetailData.id } })
+          })
 
         Button("交货")
           .type(ButtonType.Normal)
