@@ -5,12 +5,17 @@
 import { HmCard, HmCardItem, HMNavBar } from '../../components';
 import { APP_TOP_HEIGHT } from '../../constants';
 import { geoLocationManager } from '@kit.LocationKit';
-import { abilityAccessCtrl, bundleManager, common } from '@kit.AbilityKit';
+import { Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { permissionManager, PermissionManager } from '../../utils';
+import { promptAction } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct SelectLocation {
+  permissions: Permissions[] = ["ohos.permission.LOCATION", "ohos.permission.APPROXIMATELY_LOCATION"]
+  permissionsManager: PermissionManager = new PermissionManager()
+
   aboutToAppear() {
     this.checkPermission()
   }
@@ -30,7 +35,7 @@ struct SelectLocation {
   }
 
   // 检查权限
-  async checkPermission() {
+  /*async checkPermission() {
     // 没有权限,向用户申请权限,有的话直接获取
     // 1. 检查是否有权限
     let manager: abilityAccessCtrl.AtManager = abilityAccessCtrl.createAtManager()
@@ -45,7 +50,7 @@ struct SelectLocation {
         // 用户不同意
         const context = getContext() as common.UIAbilityContext
         context.startAbility({
-          abilityName: "com.huawei.hmos.MainAbility",
+          abilityName: "com.huawei.hmos.settings.MainAbility",
           bundleName: "com.huawei.hmos.settings",
           uri: "application_info_entry",
           parameters: {
@@ -61,6 +66,34 @@ struct SelectLocation {
       this.getLocation()
     }
 
+  }*/
+
+  async checkPermission() {
+    try {
+      // 1. 检查是否有权限
+      if (permissionManager.checkPermissions(this.permissions)) {
+        this.getLocation()
+      } else {
+        await permissionManager.requestPermissions(this.permissions)
+      }
+    } catch (err) {
+      promptAction.showDialog({
+        alignment: DialogAlignment.Center,
+        title: "权限提示",
+        message: "获取位置失败,请检查权限",
+        buttons: [{ text: "确定", primary: true, color: "#007AFF" },
+          { text: "取消", color: $r('app.color.text_secondary') }]
+      }).then((res) => {
+        // 点击的是"立即开启按钮"
+        if (res.index === 0) {
+          permissionManager.openPermissionSettingsPage()
+        }
+      }).catch(() => {
+      })
+        .finally(() => {
+          this.getLocation()
+        })
+    }
   }
 
   build() {
