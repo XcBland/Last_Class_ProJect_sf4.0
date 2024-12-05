@@ -3,10 +3,10 @@ import dayjs from '@hview/dayjs'
  * @Auhtor DLY
  *
  */
-import { HmCard, HmCardItem, HMNavBar, HmUpload } from '../../components'
+import { HmCard, HmCardItem, HmLoading, HMNavBar, HmUpload, upLoadFile } from '../../components'
 import { APP_TOP_HEIGHT } from '../../constants'
 import { reportExceptionParams, reportExceptionParamsModel } from '../../models/reportException'
-import { reportException } from '../../api'
+import { reportException, upLoadImage } from '../../api'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams, ExceptionType } from '../../models'
 import { HmSelectCard } from '../../components/HmSelectCard'
@@ -16,7 +16,7 @@ import { HmSelectCard } from '../../components/HmSelectCard'
 struct ExceptionReport {
   @State
   reportException: reportExceptionParamsModel = new reportExceptionParamsModel({} as reportExceptionParams)
-  exceptionErrorList: string[] = Object.values(ExceptionType).map(item => item)
+  exceptionErrorList: string[] = Object.values(ExceptionType)
   @State selectIndex: number = -1
   typeDialog: CustomDialogController = new CustomDialogController({
     builder: HmSelectCard({
@@ -25,7 +25,7 @@ struct ExceptionReport {
       },
       confirm: () => {
         if (this.selectIndex !== -1) {
-          this.reportException.exceptionType = ExceptionType[this.selectIndex]
+          this.reportException.exceptionType = this.exceptionErrorList[this.selectIndex]
         }
       }
     }),
@@ -33,6 +33,12 @@ struct ExceptionReport {
     customStyle: true,
     alignment: DialogAlignment.Bottom,
 
+  })
+  layer: CustomDialogController = new CustomDialogController({
+    builder: HmLoading({ loadingText: "异常上报中,请稍后..." }),
+    customStyle: true,
+    alignment: DialogAlignment.Center,
+    autoCancel: true
   })
 
   // 获取异常类型列表
@@ -65,25 +71,44 @@ struct ExceptionReport {
     .border({ width: { bottom: 1 }, color: $r('app.color.background_divider') })
   }
 
+  // 组件第一次创建的时候才会调用，而跳转页面是会将当前页面压栈
+  // router.back()返回当前页面时会从栈中再拿出该页面
   aboutToAppear(): void {
+
+  }
+
+  // 页面销毁的时候才会调用，而跳转页面是会将当前页面压栈,所以应该用onPageShow()接收页面返回的参数或事件
+  onPageShow(): void {
     const params = router.getParams() as CommonRouterParams
     if (params && params.id) {
       this.reportException.transportTaskId = params.id
+    }
+    if (params && params.address) {
+      this.reportException.exceptionPlace = params.address
     }
   }
 
   // 按钮是否可用
   getBtnEnabled(): boolean {
-    return !!(this.reportException.exceptionTime && this.reportException.exceptionDescribe)
+    return !!(this.reportException.exceptionTime && this.reportException.exceptionDescribe &&
+    this.reportException.exceptionType && this.reportException.exceptionPlace)
   }
 
   // 异常提交
   async ExceptionPickUp() {
     try {
-      await reportException(this.reportException)
-      promptAction.showToast({ message: '上报成功' })
+      this.layer.open()
+      if (this.reportException.exceptionImageList?.length) {
+        this.reportException.exceptionImageList = await upLoadFile(this.reportException.exceptionImageList);
+        await reportException(this.reportException)
+        promptAction.showToast({ message: '上报成功', duration: 2000 })
+        // router.back()
+      }
     } catch (e) {
       promptAction.showToast({ message: '上报失败:' + e.message })
+    } finally {
+      this.layer.close()
+      router.back()
     }
   }
 
@@ -108,12 +133,12 @@ struct ExceptionReport {
           }
         })
         HmCardItem({
-          leftTitle: '上报位置', rightContent: "请选择", onRightClick: () => {
+          leftTitle: '上报位置', rightContent: this.reportException.exceptionPlace || "请选择", onRightClick: () => {
             router.pushUrl({ url: 'pages/SelectLocation/SelectLocation' })
           }
         })
         HmCardItem({
-          leftTitle: '异常类型', rightContent: "请选择", onRightClick: () => {
+          leftTitle: '异常类型', rightContent: this.reportException.exceptionType || "请选择", onRightClick: () => {
             this.typeDialog.open()
           }
         })

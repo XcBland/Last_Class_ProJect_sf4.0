@@ -46,3 +46,4 @@ export const delayPickUp = ((params: DelayParamsModel) => {
 export const reportException = ((params: reportExceptionParamsModel) => {
   return RequestAxios.post<null>(`/tasks/reportException`, params)
 })
+
