@@ -7,17 +7,19 @@ import { APP_TOP_HEIGHT } from '../../constants';
 import { geoLocationManager } from '@kit.LocationKit';
 import { Permissions } from '@kit.AbilityKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { permissionManager, PermissionManager } from '../../utils';
+import { permissionManager, PermissionManager, WebSdkClass } from '../../utils';
 import { promptAction } from '@kit.ArkUI';
+import { webview } from '@kit.ArkWeb';
 
 @Entry
 @Component
 struct SelectLocation {
   permissions: Permissions[] = ["ohos.permission.LOCATION", "ohos.permission.APPROXIMATELY_LOCATION"]
   permissionsManager: PermissionManager = new PermissionManager()
-
+  webSdk: WebSdkClass = new WebSdkClass()
   aboutToAppear() {
     this.checkPermission()
+    WebSdkClass.webController = new webview.WebviewController()
   }
 
   // 获取位置
@@ -101,6 +103,17 @@ struct SelectLocation {
       Row().width('100%').height(AppStorage.get<number>(APP_TOP_HEIGHT))
         .backgroundColor($r('app.color.white'))
       HMNavBar({ title: '当前位置' })
+      Web({
+        src: $rawfile('location.html'),
+        controller: WebSdkClass.webController
+      })
+        .height('100%')
+        .javaScriptProxy({
+          name: 'swift',
+          object: this.webSdk,
+          methodList: ['alert','toast'],
+          controller: WebSdkClass.webController
+        })
       Text('地图')
       Column() {
         HmCard() {
@@ -110,6 +123,7 @@ struct SelectLocation {
           HmCardItem({ leftTitle: '中山公园', rightContent: '100m以内' })
         }
       }
+
       .borderRadius(10)
       .position({
         y: '100%'
