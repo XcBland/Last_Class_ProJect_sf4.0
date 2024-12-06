@@ -5,7 +5,7 @@
 import { HmLoading, HMNavBar, HmSkeleton, HmToggleCard, HmUpload, upLoadFile } from '../../components'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams } from '../../models/router'
-import { ImageList, TaskDetailInfo, TaskDetailInfoModel, TaskTypeEnum } from '../../models'
+import { ExceptionList, ImageList, TaskDetailInfo, TaskDetailInfoModel, TaskTypeEnum } from '../../models'
 import { deliver, getTaskDetail, pickUp } from '../../api'
 import { JSON } from '@kit.ArkTS'
 import { call } from '@kit.TelephonyKit'
@@ -37,6 +37,18 @@ struct TaskDetail {
       this.getTaskDetail(params.id)
     }
     console.log("TaskDetail aboutToAppear " + JSON.stringify(params.id))
+  }
+
+  async onPageShow(): Promise<void> {
+    this.scroller.scrollTo({
+      yOffset: APP_TOP_HEIGHT.toString(),
+      xOffset: ''
+    })
+    const params = router.getParams() as CommonRouterParams
+    if (params && params.addException) {
+      const result = await getTaskDetail(this.taskDetailData.id)
+      this.taskDetailData.exceptionList = result.exceptionList
+    }
   }
 
   /*基本信息*/
@@ -76,17 +88,29 @@ struct TaskDetail {
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
 
-        Column({ space: 10 }) {
-          Image($r('app.media.ic_navigation'))
-            .width(20)
-            .height(20)
-            .margin({ right: 10 })
-          Text('开始导航')
-            .textAlign(TextAlign.Center)
-            .fontSize(14)
+        // 在途的情况下显示
+        if (this.taskDetailData.status === TaskTypeEnum.LINE) {
+          Column({ space: 10 }) {
+            Image($r('app.media.ic_navigation'))
+              .width(20)
+              .height(20)
+              .margin({ right: 10 })
+            Text('开始导航')
+              .textAlign(TextAlign.Center)
+              .fontSize(14)
+          }
+          .onClick(() => {
+            router.pushUrl({
+              url: 'pages/Navigation/NavigationPage',
+              params:{
+                startAddress: this.taskDetailData.startAddress,
+                endAddress: this.taskDetailData.endAddress
+              }
+            })
+          })
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
         }
-        .justifyContent(FlexAlign.Center)
-        .alignItems(HorizontalAlign.Center)
       }
       .width('100%')
       .height(80)
@@ -371,6 +395,67 @@ struct TaskDetail {
 
   }
 
+  // 显示异常信息
+  @Builder
+  async getExceptionInfo() {
+    ForEach(this.taskDetailData.exceptionList, (item: ExceptionList) => {
+      Row() {
+        Column() {
+          Row() {
+            Text('上报时间')
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+            Text(item.exceptionTime)
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+          }
+          .width('100%')
+          .height(40)
+
+          Row() {
+            Text('异常类型')
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+            Text(item.exceptionType)
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+          }
+          .width('100%')
+          .height(40)
+
+          Row() {
+            Text('处理结果')
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+            Text(item.handleResult)
+              .fontSize(14).fontColor($r('app.color.text_primary'))
+          }
+          .width('100%')
+          .height(40)
+        }
+
+        Image($r('app.media.ic_btn_more'))
+          .width(20)
+          .aspectRatio(1)
+          .onClick(() => {
+            // 显示当前异常的详细内容，但缺少后端接口，我们就直接吧当前异常数据传到详情页
+            router.pushUrl({
+              url: 'pages/ExceptionReport/ExceptionDetail',
+              params: {
+                exceptionDetail: item
+              }
+            })
+          })
+      }
+      .width('100%')
+      .padding({
+        top: 10,
+        bottom: 10,
+        left: 20,
+        right: 20
+      })
+      .justifyContent(FlexAlign.SpaceBetween)
+      .alignItems(VerticalAlign.Center)
+      .border({ width: { bottom: 1 }, color: $r('app.color.background_divider') })
+    })
+
+  }
+
   // 获取按钮的提货状态
   getPickupStatus() {
     if (
@@ -474,6 +559,12 @@ struct TaskDetail {
 
             HmToggleCard({ title: "运输路线" }) {
               this.getTransportRoute()
+            }
+
+            if (this.taskDetailData.exceptionList && this.taskDetailData.exceptionList.length > 0) {
+              HmToggleCard({ title: '异常信息' }) {
+                this.getExceptionInfo()
+              }
             }
 
             if (this.taskDetailData.status === TaskTypeEnum.WAITING ||

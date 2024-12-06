@@ -108,7 +108,12 @@ struct ExceptionReport {
       promptAction.showToast({ message: '上报失败:' + e.message })
     } finally {
       this.layer.close()
-      router.back()
+      router.back({
+        url: 'pages/TaskDetail/TaskDetail',
+        params:{
+          addException: true
+        }
+      })
     }
   }
 

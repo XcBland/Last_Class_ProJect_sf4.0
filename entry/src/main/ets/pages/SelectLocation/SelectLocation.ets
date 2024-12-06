@@ -26,6 +26,13 @@ struct SelectLocation {
     })
   }
 
+  // 页面销毁
+  aboutToDisappear(): void {
+    WebSdkClass.Context!.eventHub.off("search_list") // 销毁时取消监听
+    WebSdkClass.Context = null // 销毁时清空Context
+    WebSdkClass.webController = null // 销毁时清空WebController
+  }
+
   //获取当前位置
   // async getLocation() {
   //   try {

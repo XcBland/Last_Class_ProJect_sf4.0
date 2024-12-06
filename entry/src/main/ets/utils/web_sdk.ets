@@ -28,6 +28,7 @@ export class WebSdkClass {
     }
   }
 
+
   //当前方法中获取的了网页端传递的数据，需要在组件中显示数据内容
   receiveData(json: string) {
     //AlertDialog.show({ message: "鸿蒙端显示：" + json })
