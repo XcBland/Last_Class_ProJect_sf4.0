@@ -40,13 +40,13 @@ export struct TaskItemCard {
 
   // 去提货
   toPickUp() {
-    if (this.getBtnEnable()) {
-      router.pushUrl({
-        url: 'pages/TaskDetail/TaskDetail',
-        params: { id: this.taskItemData.id }
-      })
+    //if (this.getBtnEnable()) {
+    router.pushUrl({
+      url: 'pages/TaskDetail/TaskDetail',
+      params: { id: this.taskItemData.id }
+    })
 
-    }
+    // }
   }
 
   build() {
@@ -171,6 +171,12 @@ export struct TaskItemCard {
       top: 10,
       left: 15,
       right: 15
+    })
+    .onClick(() => {
+      // 只有在已完成的状态下才能条件页面查询详情
+      if (Number(this.taskItemData.status) === TaskTypeEnum.FINISH) {
+        this.toPickUp()
+      }
     })
   }
 }

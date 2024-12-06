@@ -102,7 +102,7 @@ struct TaskDetail {
           .onClick(() => {
             router.pushUrl({
               url: 'pages/Navigation/NavigationPage',
-              params:{
+              params: {
                 startAddress: this.taskDetailData.startAddress,
                 endAddress: this.taskDetailData.endAddress
               }
@@ -568,13 +568,15 @@ struct TaskDetail {
             }
 
             if (this.taskDetailData.status === TaskTypeEnum.WAITING ||
-              this.taskDetailData.status === TaskTypeEnum.DELIVERED) {
+              this.taskDetailData.status === TaskTypeEnum.DELIVERED ||
+              this.taskDetailData.status === TaskTypeEnum.FINISH) {
               HmToggleCard({ title: "提货信息" }) {
                 this.getPikUpInfo()
               }
             }
             if (this.taskDetailData.status === TaskTypeEnum.LINE ||
-              this.taskDetailData.status === TaskTypeEnum.DELIVERED) {
+              this.taskDetailData.status === TaskTypeEnum.DELIVERED ||
+              this.taskDetailData.status === TaskTypeEnum.FINISH) {
               HmToggleCard({ title: "交货信息" }) {
                 this.getDeliverInfo()
               }
