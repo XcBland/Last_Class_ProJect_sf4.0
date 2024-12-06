@@ -141,18 +141,19 @@ export struct TaskItemCard {
           bottom: 10
         })
 
-        Button(this.getBtnText())
-          .fontSize(14)
-          .width(60)
-          .height(30)
-          .borderRadius(10)
-          .fontColor($r('app.color.white'))
-          .backgroundColor(this.getBtnEnable() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
-          .enabled(this.getBtnEnable())
-          .onClick(() => {
-            this.toPickUp()
-          })
-
+        if (this.taskItemData.status !== TaskTypeEnum.FINISH.toString()) {
+          Button(this.getBtnText())
+            .fontSize(14)
+            .width(60)
+            .height(30)
+            .borderRadius(10)
+            .fontColor($r('app.color.white'))
+            .backgroundColor(this.getBtnEnable() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
+            .enabled(this.getBtnEnable())
+            .onClick(() => {
+              this.toPickUp()
+            })
+        }
       }
       .width("100%")
       .justifyContent(FlexAlign.SpaceBetween)

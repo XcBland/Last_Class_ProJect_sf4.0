@@ -1,3 +1,4 @@
+import dayjs from '@hview/dayjs'
 import { getTaskList } from '../../../api'
 import { HmLoading, HmSkeleton } from '../../../components'
 import { TaskInfoItem, TaskInfoItemModel, TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
@@ -16,6 +17,12 @@ export struct TaskList {
   @State refreshing: boolean = false //是否正在刷新数据
   @State str: string = '下拉刷新' //刷新提示语
   @State refreshStatus: RefreshStatus = RefreshStatus.Inactive //刷新状态
+  layer: CustomDialogController = new CustomDialogController({
+    builder: HmLoading({ loadingText: '正在搜索中，请稍后...' }),
+    customStyle: true,
+    autoCancel: true,
+    alignment: DialogAlignment.Center
+  }) //弹窗控制器
 
   // @State status: RefreshStatus = RefreshStatus.Inactive //刷新状态
 
@@ -32,6 +39,8 @@ export struct TaskList {
     append = true
   }
 
+  // @Builder进行组间封装，要比自定义组件性能更好，因为@Builder是不需要生命周期过程的
+  // 但是@Builder只能用于当前页面中使用，@Component可以跨页面使用
   @Builder
   getBottomDisplay() {
     Row() {
@@ -96,8 +105,106 @@ export struct TaskList {
     .justifyContent(FlexAlign.Center)
   }
 
+  @Builder
+  getSearchForm() {
+    Column() {
+      Row() {
+        Search({ placeholder: '请输入任务编号' })
+          .backgroundColor($r('app.color.background_page'))
+          .height(40)
+      }
+      .justifyContent(FlexAlign.Center)
+      .width('100%')
+
+      Row() {
+        Button(this.queryParams.startTime || '开始时间')
+          .fontSize(14)
+          .width(120)
+          .height(40)
+          .fontColor($r('app.color.text_secondary'))
+          .backgroundColor($r('app.color.background_page'))
+          .type(ButtonType.Normal)
+          .borderRadius(20)
+          .onClick(() => {
+            DatePickerDialog.show({
+              selected: new Date(),
+              onDateAccept: (date: Date) => {
+                this.queryParams.startTime = dayjs(date).format('YYYY-MM-DD')
+              }
+            })
+          })
+        Text("至")
+          .fontSize(14)
+          .fontColor($r('app.color.text_primary'))
+          .margin({ left: 10 })
+        Button(this.queryParams.endTime || '结束时间')
+          .fontSize(14)
+          .width(120)
+          .height(40)
+          .fontColor($r('app.color.text_secondary'))
+          .backgroundColor($r('app.color.background_page'))
+          .type(ButtonType.Normal)
+          .borderRadius(20)
+          .onClick(() => {
+            DatePickerDialog.show({
+              selected: new Date(),
+              onDateAccept: (date: Date) => {
+                this.queryParams.endTime = dayjs(date).format('YYYY-MM-DD')
+              }
+            })
+          })
+          .margin({ left: 10 })
+        Blank()
+        Button("搜索")
+          .fontSize(14)
+          .width(70)
+          .enabled(this.getSearchEnabled())
+          .fontColor($r('app.color.white'))
+          .type(ButtonType.Normal)
+          .backgroundColor(this.getSearchEnabled() ? $r('app.color.primary') : $r('app.color.primary_disabled'))
+          .borderRadius(20)
+          .onClick(() => {
+            this.btnSearch()
+          })
+
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.Start)
+    }
+    .width('100%')
+    .backgroundColor($r('app.color.white'))
+    .padding(15)
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+  }
+
+  // 点击搜索按钮,执行筛选
+  async btnSearch() {
+    try {
+      this.layer.open()
+      // 根据当前的条件重新查询筛选
+      this.queryParams.page = 1
+      this.allPage = 1
+      await this.getTaskList(false)
+    } catch (error) {
+
+    } finally {
+      this.layer.close()
+    }
+  }
+
+  // 判断筛选按钮是否可用
+  getSearchEnabled() {
+    return !!(this.queryParams.startTime || this.queryParams.endTime)
+  }
+
   build() {
     Column() {
+
+      //  搜索表单
+      if (this.queryParams.status === TaskTypeEnum.FINISH) {
+        this.getSearchForm()
+      }
       Refresh({ refreshing: $$this.refreshing, builder: this.getRefreshDisplay() }) {
         List() {
           if (this.taskListData.length === 0) {

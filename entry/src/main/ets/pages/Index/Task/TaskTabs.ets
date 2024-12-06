@@ -70,13 +70,16 @@ struct TaskTabs {
 
 
             } else {
-              //   已完成Tab内容
-              Text(item.title)
+              TaskList({
+                queryParams: new TaskListParamsModel({
+                  status: TaskTypeEnum.FINISH,
+                  page: 1,
+                  pageSize: 5
+                } as TaskListParams)
+              })
             }
 
-          }
-
-          // .tabBar(item.title)
+          }.tabBar(item.title).key(index.toString())
         })
       }
 
