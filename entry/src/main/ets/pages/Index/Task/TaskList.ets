@@ -17,6 +17,7 @@ export struct TaskList {
   @State refreshing: boolean = false //是否正在刷新数据
   @State str: string = '下拉刷新' //刷新提示语
   @State refreshStatus: RefreshStatus = RefreshStatus.Inactive //刷新状态
+  @State reset: boolean = false //是否重置查询条件
   layer: CustomDialogController = new CustomDialogController({
     builder: HmLoading({ loadingText: '正在搜索中，请稍后...' }),
     customStyle: true,
@@ -112,6 +113,10 @@ export struct TaskList {
         Search({ placeholder: '请输入任务编号' })
           .backgroundColor($r('app.color.background_page'))
           .height(40)
+          .onChange((value: string) => {
+            this.queryParams.transportTaskId = value
+          })
+
       }
       .justifyContent(FlexAlign.Center)
       .width('100%')
@@ -155,7 +160,7 @@ export struct TaskList {
           })
           .margin({ left: 10 })
         Blank()
-        Button("搜索")
+        Button(this.reset ? '重置' : '筛选')
           .fontSize(14)
           .width(70)
           .enabled(this.getSearchEnabled())
@@ -182,10 +187,18 @@ export struct TaskList {
   async btnSearch() {
     try {
       this.layer.open()
-      // 根据当前的条件重新查询筛选
-      this.queryParams.page = 1
-      this.allPage = 1
-      await this.getTaskList(false)
+      if (this.reset) {
+        this.queryParams.startTime = null
+        this.queryParams.endTime = null
+        this.reset = false
+      } else {
+        this.reset = true
+        // 根据当前的条件重新查询筛选
+        this.queryParams.page = 1
+        this.allPage = 1
+        await this.getTaskList(false)
+      }
+
     } catch (error) {
 
     } finally {
