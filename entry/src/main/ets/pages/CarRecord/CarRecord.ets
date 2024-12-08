@@ -39,6 +39,7 @@ struct CarRecord {
     this.taskDetailData = await getTaskDetail(id)
   }
 
+  // 点击回车登记 按钮
   async btnRecord() {
     try {
       this.layer.open()

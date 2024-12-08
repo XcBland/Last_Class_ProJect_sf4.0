@@ -1,3 +1,5 @@
+import { APP_TOP_HEIGHT } from "../constants"
+
 @Preview
 @CustomDialog
 export struct HmConfirm {
@@ -12,6 +14,7 @@ export struct HmConfirm {
   build() {
     Row() {
       Column() {
+
         Row() {
           Text(this.message)
         }

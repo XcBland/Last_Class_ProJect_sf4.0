@@ -3,6 +3,7 @@ import { getTaskList } from '../../../api'
 import { HmLoading, HmSkeleton } from '../../../components'
 import { TaskInfoItem, TaskInfoItemModel, TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
 import { TaskItemCard } from './TaskItemCard'
+import { vibrator } from '@kit.SensorServiceKit'
 
 @Component
 export struct TaskList {
@@ -42,6 +43,7 @@ export struct TaskList {
 
   // @Builder进行组间封装，要比自定义组件性能更好，因为@Builder是不需要生命周期过程的
   // 但是@Builder只能用于当前页面中使用，@Component可以跨页面使用
+  // 底部显示加载状态
   @Builder
   getBottomDisplay() {
     Row() {
@@ -89,6 +91,7 @@ export struct TaskList {
     }
   }
 
+  /*获取刷新提示语*/
   @Builder
   getRefreshDisplay() {
     Row({ space: 10 }) {
@@ -106,6 +109,7 @@ export struct TaskList {
     .justifyContent(FlexAlign.Center)
   }
 
+  //搜索表单
   @Builder
   getSearchForm() {
     Column() {
@@ -257,6 +261,7 @@ export struct TaskList {
           this.str = '正在刷新...'
           setTimeout(() => {
             this.onRefresh()
+            vibrator.startVibration({ duration: 300, type: 'time' }, { id: 0, usage: "touch" })
           }, 3000)
         } else if (status === RefreshStatus.Done) {
           this.str = '刷新完成'

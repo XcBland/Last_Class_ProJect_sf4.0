@@ -1,22 +1,23 @@
 import { ImageList } from '.'
 
+// 回车记录参数
 export interface CarRecordParams {
-  id: string
-  startTime: string
-  endTime: string
-  accidentDescription: string | null
-  accidentImagesList: ImageList[] | null
-  accidentType: string | null
-  breakRulesDescription: string | null
-  breakRulesType: string | null
-  deductPoints: number | null
-  faultDescription: string | null
-  faultImagesList: ImageList[] | null
-  faultType: string | null
-  isAccident: boolean | null
-  isAvailable: boolean | null
-  isFault: boolean | null
-  penaltyAmount: string | null
+  id: string // 记录ID
+  startTime: string // 开始时间
+  endTime: string // 结束时间
+  accidentDescription: string | null // 事故描述
+  accidentImagesList: ImageList[] | null // 事故图片列表
+  accidentType: string | null // 事故类型
+  breakRulesDescription: string | null  // 违章规则描述
+  breakRulesType: string | null // 违章规则类型
+  deductPoints: number | null // 扣分点数
+  faultDescription: string | null // 故障描述
+  faultImagesList: ImageList[] | null // 故障图片列表
+  faultType: string | null  // 故障类型
+  isAccident: boolean | null  // 是否事故
+  isAvailable: boolean | null  // 是否可用
+  isFault: boolean | null  // 是否故障
+  penaltyAmount: string | null  // 处罚金额
 
 }
 

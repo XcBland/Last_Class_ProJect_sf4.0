@@ -141,7 +141,8 @@ export struct TaskItemCard {
           bottom: 10
         })
 
-        if (this.taskItemData.status !== TaskTypeEnum.FINISH.toString()) {
+        // this.taskItemData.status !== TaskTypeEnum.FINISH.toString()
+        if (parseInt(this.taskItemData.status) !== TaskTypeEnum.FINISH) {
           Button(this.getBtnText())
             .fontSize(14)
             .width(60)
@@ -154,6 +155,7 @@ export struct TaskItemCard {
               this.toPickUp()
             })
         }
+
       }
       .width("100%")
       .justifyContent(FlexAlign.SpaceBetween)
