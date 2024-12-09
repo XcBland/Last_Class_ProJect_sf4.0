@@ -2,8 +2,7 @@
  * @Auhtor DLY
  *
  */
-import { HmCard, HmCardItem, HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HmCard, HmCardItem, HMNavBar,APP_TOP_HEIGHT } from 'swift_common'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams, DelayParams, DelayParamsModel } from '../../models'
 import dayjs from '@hview/dayjs'

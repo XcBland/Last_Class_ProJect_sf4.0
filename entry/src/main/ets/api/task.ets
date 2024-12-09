@@ -10,7 +10,7 @@ import {
   TaskListParams
 } from "../models";
 import { DeliverParamsModel } from "../models/deliver";
-import { Request, RequestAxios } from "../utils";
+import { Request, RequestAxios } from "swift_common";
 
 //获取任务列表
 export const getTaskList = (params: TaskListParams) => {

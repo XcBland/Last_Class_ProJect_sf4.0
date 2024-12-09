@@ -3,13 +3,23 @@ import dayjs from '@hview/dayjs'
  * @Auhtor DLY
  *
  */
-import { HmCard, HmCardItem, HmLoading, HMNavBar, HmUpload, upLoadFile } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+
+import {
+  upLoadImage,
+  HmSelectCard,
+  APP_TOP_HEIGHT,
+  HmCard,
+  HmCardItem,
+  HmLoading,
+  HMNavBar,
+  HmUpload,
+  upLoadFile
+} from 'swift_common'
 import { reportExceptionParams, reportExceptionParamsModel } from '../../models/reportException'
-import { reportException, upLoadImage } from '../../api'
+import { reportException, } from '../../api'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams, ExceptionType } from '../../models'
-import { HmSelectCard } from '../../components/HmSelectCard'
+
 
 @Entry
 @Component
@@ -110,7 +120,7 @@ struct ExceptionReport {
       this.layer.close()
       router.back({
         url: 'pages/TaskDetail/TaskDetail',
-        params:{
+        params: {
           addException: true
         }
       })

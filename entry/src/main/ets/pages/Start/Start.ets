@@ -1,7 +1,6 @@
 import { AdvertClass } from '../../models/advert'
-import { UserSettingClass } from '../../utils'
 import { router } from '@kit.ArkUI'
-import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
+import { APP_TOP_HEIGHT, TOKEN_KEY, UserSettingClass } from 'swift_common'
 
 PersistentStorage.persistProp(TOKEN_KEY, "")
 

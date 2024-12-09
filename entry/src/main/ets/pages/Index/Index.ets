@@ -1,4 +1,4 @@
-import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../../constants';
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from 'swift_common';
 import { TabClass } from '../../models';
 import { Mine } from './Mine/Mine';
 import { TaskTabs } from './Task/TaskTabs';

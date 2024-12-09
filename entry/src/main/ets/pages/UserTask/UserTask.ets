@@ -1,7 +1,6 @@
 import dayjs from '@hview/dayjs'
 import { getUserTaskInfo } from '../../api'
-import { HmCalendar, HmLoading, HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HmCalendar, HmLoading, HMNavBar, APP_TOP_HEIGHT } from 'swift_common'
 import { UserTaskInfo, UserTaskInfoModel, UserTaskInfoParamsModel } from '../../models'
 
 @Entry

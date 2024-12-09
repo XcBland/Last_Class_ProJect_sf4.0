@@ -1,5 +1,4 @@
-import { HmCard, HmCardItem, HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HmCard, HmCardItem, HMNavBar,APP_TOP_HEIGHT } from 'swift_common'
 import { CommonRouterParams, ExceptionList, ExceptionListModel, ImageList } from '../../models'
 import { router } from '@kit.ArkUI'
 

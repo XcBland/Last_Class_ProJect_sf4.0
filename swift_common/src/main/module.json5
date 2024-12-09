@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "swift_common",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}

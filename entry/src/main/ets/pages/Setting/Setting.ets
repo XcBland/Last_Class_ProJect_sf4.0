@@ -1,7 +1,5 @@
-import { HmCard, HmCardItem, HmConfirm, HMNavBar } from '../../components'
+import { UserSettingClass ,HmCard, HmCardItem, HmConfirm, HMNavBar,APP_TOP_HEIGHT, TOKEN_KEY } from 'swift_common'
 import { promptAction, router } from '@kit.ArkUI'
-import { APP_TOP_HEIGHT, TOKEN_KEY } from '../../constants'
-import { UserSettingClass } from '../../utils'
 import { fileIo as fs, ListFileOptions } from '@kit.CoreFileKit'
 
 PersistentStorage.persistProp(TOKEN_KEY, '')

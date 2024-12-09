@@ -1,10 +1,8 @@
 // 地图导航页面
 import { promptAction, router } from '@kit.ArkUI'
-import { HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { APP_TOP_HEIGHT,HMNavBar, permissionManager, WebSdkClass } from 'swift_common'
 import { CommonRouterParams } from '../../models'
 import { Permissions } from '@kit.AbilityKit'
-import { permissionManager, WebSdkClass } from '../../utils'
 import { webview } from '@kit.ArkWeb'
 
 @Entry

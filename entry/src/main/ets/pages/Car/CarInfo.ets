@@ -1,6 +1,5 @@
 import { getUserCarInfo } from '../../api'
-import { HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HMNavBar,APP_TOP_HEIGHT } from 'swift_common'
 import { ImageList, UserCarDataType, UserCarDataTypeModel } from '../../models'
 
 @Entry

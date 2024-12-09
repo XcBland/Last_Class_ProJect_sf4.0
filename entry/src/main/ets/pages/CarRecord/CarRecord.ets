@@ -3,8 +3,7 @@
  *
  */
 import { carRecord, getTaskDetail } from '../../api'
-import { HmCard, HmCardItem, HmCheckBox, HmLoading, HMNavBar } from '../../components'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { HmCard, HmCardItem, HmCheckBox, HmLoading, HMNavBar,APP_TOP_HEIGHT  } from 'swift_common'
 import {
   CarRecordParams,
   CarRecordParamsModel,

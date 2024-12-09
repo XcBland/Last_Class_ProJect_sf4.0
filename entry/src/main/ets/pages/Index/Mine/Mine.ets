@@ -1,4 +1,4 @@
-import { HmCard, HmCardItem, HmSkeleton } from "../../../components"
+import { HmCard, HmCardItem, HmSkeleton } from "swift_common"
 import { promptAction, router } from "@kit.ArkUI"
 import { getUserInfo, getUserTaskInfo } from "../../../api"
 import {

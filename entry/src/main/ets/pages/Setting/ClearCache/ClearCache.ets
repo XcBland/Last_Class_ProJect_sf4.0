@@ -1,7 +1,6 @@
 
 import { fileIo as fs } from "@kit.CoreFileKit"
-import { HMNavBar } from '../../../components'
-import { APP_TOP_HEIGHT } from '../../../constants'
+import { APP_TOP_HEIGHT,HMNavBar } from 'swift_common'
 
 
 @Entry

@@ -1,7 +1,5 @@
-
 import router from '@ohos.router';
-import { HMNavBar } from '../../../components';
-import { APP_TOP_HEIGHT } from '../../../constants';
+import { APP_TOP_HEIGHT, HMNavBar } from 'swift_common';
 
 
 // 输入框通用样式

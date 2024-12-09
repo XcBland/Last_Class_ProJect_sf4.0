@@ -1,7 +1,5 @@
-import { HmCard, HmCardItem, HMNavBar } from '../../components';
-import { APP_TOP_HEIGHT } from '../../constants';
+import { HmCard, HmCardItem, HMNavBar,APP_TOP_HEIGHT,permissionManager, WebSdkClass } from 'swift_common';
 import { Permissions } from '@kit.AbilityKit';
-import { permissionManager, WebSdkClass } from '../../utils';
 import { promptAction, router } from '@kit.ArkUI';
 import { webview } from '@kit.ArkWeb';
 import { AddressItem } from '../../models/location';

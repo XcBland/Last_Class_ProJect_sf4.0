@@ -5,6 +5,7 @@ export * from './HmConfirm';
 export * from './HmSkeleton';
 export * from './HmLoading';
 export * from './HmToggleCard';
+export * from './HmSelectCard'
 export * from './HmUpload';
 export * from './HmPreview';
 export * from './HmCheckBox';

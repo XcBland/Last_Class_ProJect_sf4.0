@@ -1,5 +1,5 @@
 import { login } from '../../api';
-import { TOKEN_KEY } from '../../constants';
+import { TOKEN_KEY } from 'swift_common';
 import { LoginForm, LoginFormModel } from '../../models';
 import { Request, UserSettingClass } from '../../utils';
 import { promptAction, router } from '@kit.ArkUI';

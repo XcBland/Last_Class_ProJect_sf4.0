@@ -1,6 +1,6 @@
 import dayjs from '@hview/dayjs'
 import { getTaskList } from '../../../api'
-import { HmLoading, HmSkeleton } from '../../../components'
+import { HmLoading, HmSkeleton } from 'swift_common'
 import { TaskInfoItem, TaskInfoItemModel, TaskListParams, TaskListParamsModel, TaskTypeEnum } from '../../../models'
 import { TaskItemCard } from './TaskItemCard'
 import { vibrator } from '@kit.SensorServiceKit'

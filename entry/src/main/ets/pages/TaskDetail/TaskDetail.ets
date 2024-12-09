@@ -2,16 +2,16 @@
  * @Auhtor DLY
  *
  */
-import { HmLoading, HMNavBar, HmSkeleton, HmToggleCard, HmUpload, upLoadFile } from '../../components'
 import { promptAction, router } from '@kit.ArkUI'
 import { CommonRouterParams } from '../../models/router'
 import { ExceptionList, ImageList, TaskDetailInfo, TaskDetailInfoModel, TaskTypeEnum } from '../../models'
 import { deliver, getTaskDetail, pickUp } from '../../api'
-import { JSON } from '@kit.ArkTS'
+import { JSON, MessageEvent, MessageEvents, worker } from '@kit.ArkTS'
 import { call } from '@kit.TelephonyKit'
-import { APP_TOP_HEIGHT } from '../../constants'
+import { APP_TOP_HEIGHT , HmLoading, HMNavBar, HmSkeleton, HmToggleCard, HmUpload, upLoadFile } from 'swift_common'
 import { PickUpParamsModel } from '../../models/pick_up'
 import { DeliverParamsModel } from '../../models/deliver'
+import { PostParams } from '../../workers/UploadWorker'
 
 @Entry
 @Component
@@ -515,20 +515,70 @@ struct TaskDetail {
   async btnDeliver() {
     try {
       this.layer.open()
-      // 上传图片,获取永久的图片地址
-      const certificatePictureListUrl =
-        await upLoadFile(this.taskDetailData.certificatePictureList)
-      const deliverPictureListUrl = await upLoadFile(this.taskDetailData.deliverPictureList)
-      // 实现提货功能
-      await deliver(new DeliverParamsModel({
-        id: this.taskDetailData.id,
-        certificatePictureList: certificatePictureListUrl,
-        deliverPictureList: deliverPictureListUrl,
-      }))
-      this.getTaskDetail(this.taskDetailData.id)
-      this.scroller.scrollEdge(Edge.Top) // 回到顶部
-      promptAction.showToast({ message: "交货成功", duration: 2000 })
-      this.layer.close()
+
+      // 创建子线程
+      const worker1 = new worker.ThreadWorker("entry/ets/workers/UploadWorker.ts")
+      const worker2 = new worker.ThreadWorker("entry/ets/workers/UploadWorker.ts")
+
+      // 发送消息给子线程
+      worker1.postMessage({
+        file: [...this.taskDetailData.cargoPickUpPictureList],
+        filePath: getContext().cacheDir
+      })
+      worker2.postMessage({
+        file: [...this.taskDetailData.cargoPictureList],
+        filePath: getContext().cacheDir
+      })
+      //子线程进行图片压缩
+
+
+      // 主线程接收子线程回传的内容
+      let cargoPickUpPictureList: ImageList[] = []
+      let cargoPictureList: ImageList[] = []
+      worker1.onmessage = (e: MessageEvents) => {
+        const params = e.data as PostParams
+        cargoPickUpPictureList = params.files
+        checkFile()
+      }
+      worker2.onmessage = (e: MessageEvents) => {
+        const params = e.data as PostParams
+        cargoPictureList = params.files
+        checkFile()
+      }
+
+      // 主线程继续进行图片上传
+
+      const checkFile = async () => {
+        if (cargoPickUpPictureList.length && cargoPictureList.length) {
+          const result = await Promise.all([
+            upLoadFile(cargoPickUpPictureList),
+            upLoadFile(cargoPictureList)
+          ])
+          await pickUp(new PickUpParamsModel({
+            id: this.taskDetailData.id,
+            cargoPickUpPictureList: result[0],
+            cargoPictureList: result[1]
+          }))
+          this.getTaskDetail(this.taskDetailData.id)
+          this.scroller.scrollEdge(Edge.Top) // 回到顶部
+          promptAction.showToast({ message: "提货成功", duration: 2000 })
+        }
+      }
+
+      /*      // 上传图片,获取永久的图片地址
+            const certificatePictureListUrl =
+              await upLoadFile(this.taskDetailData.certificatePictureList)
+            const deliverPictureListUrl = await upLoadFile(this.taskDetailData.deliverPictureList)
+            // 实现提货功能
+            await deliver(new DeliverParamsModel({
+              id: this.taskDetailData.id,
+              certificatePictureList: certificatePictureListUrl,
+              deliverPictureList: deliverPictureListUrl,
+            }))
+            this.getTaskDetail(this.taskDetailData.id)
+            this.scroller.scrollEdge(Edge.Top) // 回到顶部
+            promptAction.showToast({ message: "交货成功", duration: 2000 })
+            this.layer.close()*/
     } catch (error) {
       promptAction.showToast({ message: "交货失败" + error.message, duration: 2000 })
     } finally {

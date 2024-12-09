@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storePassword": "000000181F5C730481FFBF42601CD15DABE1E7B096D465341187F41C4A16B2E6FC7F1AEE0C05BA2F",
+          "certpath": "E:/HarmonyOS_Study/Study/CSR/switf_4.0.cer",
+          "keyAlias": "swift",
+          "keyPassword": "000000189CE11590C60414C4D11C7614A27E04E3F81448283D74B1F7EF208D54CF4D8EAE7816811E",
+          "profile": "E:/HarmonyOS_Study/Study/CSR/swift_4.0Debug.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "E:/HarmonyOS_Study/Study/privateKey/swift.p12"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
@@ -36,6 +50,10 @@
           ]
         }
       ]
+    },
+    {
+      "name": "swift_common",
+      "srcPath": "./swift_common",
     }
   ]
 }
