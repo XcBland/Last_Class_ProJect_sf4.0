@@ -49,9 +49,10 @@ export struct TaskList {
     Row() {
       if (this.loading) {
         Text(this.allPage < this.queryParams.page ? '没有更多数据了' : '正在加载...')
+          .fontSize(14)
+          .fontColor($r('app.color.text_secondary'))
         if (this.allPage >= this.queryParams.page) {
-          HmLoading()
-
+          HmLoading({ hWidth: 20 })
         }
       }
     }
@@ -237,6 +238,7 @@ export struct TaskList {
               //   列表底部显示加载状态
               this.getBottomDisplay()
             }
+
           }
 
         }

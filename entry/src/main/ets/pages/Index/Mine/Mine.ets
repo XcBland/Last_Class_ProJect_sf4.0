@@ -151,7 +151,11 @@ export struct Mine {
 
         //3.综合信息
         HmCard() {
-          HmCardItem({ leftTitle: "车辆数据", rightContent: "京A1xxxxx", showRightIcon: false })
+          HmCardItem({
+            leftTitle: "车辆数据", rightContent: "", onRightClick: () => {
+              router.pushUrl({ url: 'pages/Car/CarInfo' })
+            }
+          })
           HmCardItem({ leftTitle: "任务数据", rightContent: "20/150", showRightIcon: false })
           HmCardItem({
             leftTitle: "系统数据", onRightClick: () => {

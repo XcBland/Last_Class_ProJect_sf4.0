@@ -6,20 +6,23 @@ export struct HmLoading {
   @State num: number = 0;
   @State maxNumber: number = 100;
   timer: number = -1
-  hWidth: number = 300
+  hWidth: number = 40 // 进度条的宽度
 
   aboutToAppear(): void {
-    setInterval(() => {
+    this.timer = setInterval(() => {
       if (this.num === this.maxNumber) {
         this.num = 0
       }
-      this.num += 10;
+      this.num++
+    }, 10)
+  }
 
-    }, 100)
+  aboutToDisappear(): void {
+    clearInterval(this.timer)
   }
 
   build() {
-    Column() {
+    Column({ space: 10 }) {
       Progress({
         total: this.maxNumber, // 这是进度条的总数
         value: this.num, // 这是当前进度条的数值
@@ -27,6 +30,7 @@ export struct HmLoading {
       })
         .color($r('app.color.text_primary'))
         .width(this.hWidth)
+        .style({ strokeWidth: 2 })
         .height(this.hWidth)
         .margin({
           top: 10,
@@ -40,10 +44,7 @@ export struct HmLoading {
           .fontColor($r('app.color.text_primary'))
       }
     }
-    .width("100%")
-    .height("100%")
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor('rgba(0, 0, 0, 0.5)')
 
   }
 }

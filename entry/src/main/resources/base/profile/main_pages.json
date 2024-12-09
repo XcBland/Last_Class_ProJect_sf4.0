@@ -10,6 +10,12 @@
     "pages/ExceptionReport/ExceptionReport",
     "pages/SelectLocation/SelectLocation",
     "pages/ExceptionReport/ExceptionDetail",
-    "pages/Navigation/NavigationPage"
+    "pages/Navigation/NavigationPage",
+    "pages/Car/CarInfo",
+    "pages/UserTask/UserTask",
+    "pages/Setting/ChangeBindMobile/SwitchBundled",
+    "pages/Setting/ChangePassword/ChangePassword",
+    "pages/Setting/MessageSetting/MessageSetting",
+    "pages/Setting/ClearCache/ClearCache"
   ]
 }

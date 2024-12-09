@@ -85,13 +85,26 @@ struct Setting {
         .backgroundColor($r('app.color.white'))
       HMNavBar({ title: '系统设置' })
       HmCard() {
-        HmCardItem({ leftTitle: '换绑手机', rightContent: "" })
-        HmCardItem({ leftTitle: '修改密码', rightContent: "" })
-        HmCardItem({ leftTitle: '消息通知设置', rightContent: "" })
+        HmCardItem({
+          leftTitle: '换绑手机', rightContent: "", onRightClick: () => {
+            router.pushUrl({ url: 'pages/Setting/ChangeBindMobile/SwitchBundled' })
+          }
+        })
+        HmCardItem({
+          leftTitle: '修改密码', rightContent: "", onRightClick: () => {
+            router.pushUrl({ url: 'pages/Setting/ChangePassword/ChangePassword' })
+          }
+        })
+        HmCardItem({
+          leftTitle: '消息通知设置', rightContent: "", onRightClick: () => {
+            router.pushUrl({ url: 'pages/Setting/MessageSetting/MessageSetting' })
+          }
+        })
         HmCardItem({
           leftTitle: '清理缓存', rightContent: "", onRightClick: () => {
             // 实现清理缓存功能(自定义弹窗)、
-            this.clearCacheDialog.open()
+            // this.clearCacheDialog.open()
+            router.pushUrl({ url: 'pages/Setting/ClearCache/ClearCache' })
           }
         })
       }
