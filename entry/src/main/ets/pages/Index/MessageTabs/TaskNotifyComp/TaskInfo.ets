@@ -6,9 +6,9 @@ export struct TaskInfo {
   taskInfo: MessageInfoModel = new MessageInfoModel({} as MessageInfo)
   @State isFlushed: boolean = false
   onRecord: () => void = () => {
-  }
+  } // 点击记录全部已读按钮的回调函数
   onReadOnly: () => void = () => {
-  }
+  } // 点击单个已读按钮的回调函数
 
   build() {
     Column() {
@@ -23,7 +23,6 @@ export struct TaskInfo {
             .fill(Color.Red)
         }
       }
-
       .width('100%')
 
       Row() {

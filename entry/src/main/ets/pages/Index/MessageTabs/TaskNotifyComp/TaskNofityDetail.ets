@@ -1,8 +1,8 @@
-import { HmLoading, HmSkeleton } from "swift_common";
-import { getMessage, getRead, getReadOnly } from "../../../../api/message";
-import { MessageInfo, MessageParams, MessageParamsModel } from "../../../../models";
-import { vibrator } from "@kit.SensorServiceKit";
-import { TaskInfo } from "./TaskInfo";
+import { HmLoading, HmSkeleton } from 'swift_common';
+import { getMessage, getRead, getReadOnly } from '../../../../api/message';
+import { MessageInfo, MessageParams, MessageParamsModel } from '../../../../models';
+import { vibrator } from '@kit.SensorServiceKit';
+import { TaskInfo } from './TaskInfo';
 
 @Component
 export struct TaskNofityDetail {
@@ -58,17 +58,15 @@ export struct TaskNofityDetail {
   }
 
   /*刷新数据*/
-  onRefresh() {
-    // this.getRefreshDisplay()
+  async onRefresh() {
     this.refreshing = true
     this.messageList = []
     this.queryParams.page = 1
     this.allPage = 1
-    this.getMessageList(false)
-    setTimeout(() => {
-      this.refreshing = false
-      this.loading = false
-    }, 1000)
+    await this.getMessageList(false)
+    this.refreshing = false
+    this.loading = false
+
 
   }
 
@@ -157,6 +155,7 @@ export struct TaskNofityDetail {
           } else {
             ForEach(this.messageList, (item: MessageInfo, index: number) => {
               ListItem() {
+                // 任务通知详情
                 TaskInfo({
                   taskInfo: item, onRecord: () => {
                     this.onFlush()
@@ -176,7 +175,7 @@ export struct TaskNofityDetail {
           }
 
         }
-        .scrollBar(BarState.Off)
+        .scrollBar(BarState.Off) //关闭滚动条
         .onReachEnd(async () => {
           if (this.allPage >= this.queryParams.page) {
             if (!this.loading) {
@@ -195,10 +194,10 @@ export struct TaskNofityDetail {
           this.str = '超过刷新距离，松开立即刷新'
         } else if (status === RefreshStatus.Refresh) {
           this.str = '正在刷新...'
-          setTimeout(() => {
-            this.onRefresh()
-            vibrator.startVibration({ duration: 300, type: 'time' }, { id: 0, usage: "touch" })
-          }, 3000)
+
+          this.onRefresh()
+          vibrator.startVibration({ duration: 300, type: 'time' }, { id: 0, usage: "touch" })
+
         } else if (status === RefreshStatus.Done) {
           this.str = '刷新完成'
         }

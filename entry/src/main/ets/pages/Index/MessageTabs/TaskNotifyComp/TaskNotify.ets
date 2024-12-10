@@ -1,10 +1,10 @@
-import { TaskNofityDetail } from "./TaskNofityDetail"
+import { TaskNofityDetail } from './TaskNofityDetail'
 
 @Component
 export struct TaskNotify {
   build() {
     Column() {
-      TaskNofityDetail()
+      TaskNofityDetail()  // 通知的细节
     }
     .width("100%")
     .height("100%")

@@ -4,7 +4,6 @@
  */
 import { APP_TOP_HEIGHT } from 'swift_common'
 import { router } from '@kit.ArkUI'
-import { MessageInfo, MessageInfoModel } from '../../../../models'
 import dayjs from '@hview/dayjs'
 
 @Entry

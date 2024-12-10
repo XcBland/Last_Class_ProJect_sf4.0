@@ -7,9 +7,9 @@ import { getReadOnly } from "../../../../api/message"
 export struct Annoucements {
   @State messageInfoModel: MessageInfoModel = new MessageInfoModel({} as MessageInfo)
   onRecord: () => void = () => {
-  }
+  } // 点击记录全部已读按钮的回调函数
   onReadOnly: () => void = () => {
-  }
+  } // 点击单个已读按钮的回调函数
 
   build() {
 

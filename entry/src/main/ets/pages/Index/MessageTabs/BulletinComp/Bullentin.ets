@@ -1,5 +1,5 @@
-import { HmCard, HmCardItem, HmLoading, HmSkeleton } from 'swift_common'
-import { MessageClass, MessageInfo, MessagePageDataInfo, MessageParams, MessageParamsModel } from '../../../../models'
+import { HmLoading, HmSkeleton } from 'swift_common'
+import { MessageInfo, MessageParams, MessageParamsModel } from '../../../../models'
 import { vibrator } from '@kit.SensorServiceKit'
 import { Annoucements } from './Annoucements'
 import { getMessage, getRead, getReadOnly } from '../../../../api/message'
@@ -11,7 +11,7 @@ export struct Bullentin {
   @State queryParams: MessageParams = new MessageParamsModel({
     contentType: '200',
     page: 1,
-    pageSize: 5
+    pageSize: 2
   } as MessageParams) //查询的参数
   allPage: number = 1 //总页数
   @State loading: boolean = false //是否正在加载数据
@@ -29,7 +29,7 @@ export struct Bullentin {
   //获取任务列表数据
   async getMessageList(append: boolean) {
     const result = await getMessage(this.queryParams)
-    this.allPage = result.pageSize //总页数
+    this.allPage = parseInt(result.pages) //总页数
     if (append) {
       this.messageList = this.messageList.concat(result.items || []) //合并数据
     } else {
@@ -58,17 +58,17 @@ export struct Bullentin {
   }
 
   /*刷新数据*/
-  onRefresh() {
-    // this.getRefreshDisplay()
+  async onRefresh() {
     this.refreshing = true
     this.messageList = []
     this.queryParams.page = 1
+    // this.queryParams.pageSize = 5
     this.allPage = 1
-    this.getMessageList(false)
-    setTimeout(() => {
-      this.refreshing = false
-      this.loading = false
-    }, 1000)
+    await this.getMessageList(false)
+
+    this.refreshing = false
+    this.loading = false
+
 
   }
 
@@ -119,6 +119,7 @@ export struct Bullentin {
     }
   }
 
+  /*读取单个内容*/
   async onReadOnly(item: MessageInfo) {
     try {
       await getReadOnly(item.id)
@@ -167,6 +168,7 @@ export struct Bullentin {
             ListItem() {
               //   列表底部显示加载状态
               this.getBottomDisplay()
+
             }
 
           }
@@ -183,6 +185,13 @@ export struct Bullentin {
               this.loading = this.allPage < this.queryParams.page ? true : false //如果没有更多数据了，则停止加载
             }
           }
+          //   this.loading = true //开始加载数据
+          //   if (this.page < this.allPage && this.refreshing) {
+          //     await this.getMessageList(true)
+          //   }
+          //   if (this.page !== this.allPage) {
+          //     this.loading = false //如果没有更多数据了，则停止加载
+          //   }
         })
       }
       .onStateChange((status: RefreshStatus) => {
@@ -193,10 +202,9 @@ export struct Bullentin {
           this.str = '超过刷新距离，松开立即刷新'
         } else if (status === RefreshStatus.Refresh) {
           this.str = '正在刷新...'
-          setTimeout(() => {
-            this.onRefresh()
-            vibrator.startVibration({ duration: 300, type: 'time' }, { id: 0, usage: "touch" })
-          }, 3000)
+          this.onRefresh()
+          vibrator.startVibration({ duration: 300, type: 'time' }, { id: 0, usage: "touch" })
+
         } else if (status === RefreshStatus.Done) {
           this.str = '刷新完成'
         }
