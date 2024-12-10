@@ -2,7 +2,7 @@
  * 实习用户接口的调用
  * */
 import {LoginFormModel, UserCarDataTypeModel, UserInfoModel, UserTaskInfoModel, UserTaskInfoParams} from '../models'
-import { Request,RequestAxios } from '../utils'
+import { Request,RequestAxios } from 'swift_common'
 
 //1.用户登录接口的调用
 export const login = (data: LoginFormModel)=>{

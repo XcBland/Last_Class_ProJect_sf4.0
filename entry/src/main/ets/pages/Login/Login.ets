@@ -1,7 +1,7 @@
 import { login } from '../../api';
 import { TOKEN_KEY } from 'swift_common';
 import { LoginForm, LoginFormModel } from '../../models';
-import { Request, UserSettingClass } from '../../utils';
+import { Request, UserSettingClass } from 'swift_common';
 import { promptAction, router } from '@kit.ArkUI';
 
 PersistentStorage.persistProp(TOKEN_KEY, "")

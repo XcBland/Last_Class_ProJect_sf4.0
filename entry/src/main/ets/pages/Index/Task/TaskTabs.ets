@@ -41,6 +41,7 @@ struct TaskTabs {
         .animation({ duration: 300, curve: Curve.EaseInOut })
 
     }
+
     .onClick(() => {
       // 利用findIndex方法，通过name属性找到当前点击的Tab的index
       const index = this.tabsData.findIndex(obj => obj.name === item.name)

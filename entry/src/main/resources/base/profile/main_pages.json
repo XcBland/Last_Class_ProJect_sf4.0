@@ -16,6 +16,7 @@
     "pages/Setting/ChangeBindMobile/SwitchBundled",
     "pages/Setting/ChangePassword/ChangePassword",
     "pages/Setting/MessageSetting/MessageSetting",
-    "pages/Setting/ClearCache/ClearCache"
+    "pages/Setting/ClearCache/ClearCache",
+    "pages/Index/MessageTabs/BulletinComp/messageDetail"
   ]
 }

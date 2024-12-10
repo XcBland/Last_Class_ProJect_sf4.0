@@ -1,8 +1,8 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { UserSettingClass } from '../utils/setting';
-import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from '../constants';
+
+import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT,UserSettingClass  } from 'swift_common';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {

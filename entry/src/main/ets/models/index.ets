@@ -26,6 +26,10 @@ export * from "./location"
 
 export * from "./car"
 
+export * from "./messagetab"
+
+export * from "./message"
+
 //服务器端所有接口返回的数据类型
 export class ResponseData<T> {
   code: number = 0

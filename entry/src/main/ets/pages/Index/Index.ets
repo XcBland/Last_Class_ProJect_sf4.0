@@ -1,5 +1,6 @@
 import { APP_BOTTOM_HEIGHT, APP_TOP_HEIGHT } from 'swift_common';
 import { TabClass } from '../../models';
+import { MessageTab } from './MessageTabs/MessageTab';
 import { Mine } from './Mine/Mine';
 import { TaskTabs } from './Task/TaskTabs';
 
@@ -39,7 +40,7 @@ struct Index {
           if (item.name === 'task') {
             TaskTabs()
           } else if (item.name === 'message') {
-            Text("消息组件")
+            MessageTab()
           } else if (item.name === 'mine') {
             Mine()
           }
