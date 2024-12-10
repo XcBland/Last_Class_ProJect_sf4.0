@@ -1,17 +1,17 @@
 import { APP_TOP_HEIGHT } from 'swift_common'
 import { MessageClass } from '../../../models/messagetab'
-import { Bullentin } from './BulletinComp/Bullentin'
+import { Bulletin } from './BulletinComp/Bullentin'
 import { TaskNotify } from './TaskNotifyComp/TaskNotify'
 
 @Component
 export struct MessageTab {
   @State currentIndex: number = 0
   @State messageTabs: MessageClass[] = [
-    { title: '公告', name: 'Bullentin' },
+    { title: '公告', name: 'Bulletin' },
     { title: '任务通知', name: 'TaskNotify' }
   ]
   @State
-  currentName: string = "Bullentin"
+  currentName: string = "Bulletin"
 
   @Builder
   getTabBar(item: MessageClass) {
@@ -57,8 +57,8 @@ export struct MessageTab {
         Tabs({ barPosition: BarPosition.Start, index: $$this.currentIndex }) {
           ForEach(this.messageTabs, (item: MessageClass, index: number) => {
             TabContent() {
-              if (item.name === "Bullentin") {
-                Bullentin()
+              if (item.name === "Bulletin") {
+                Bulletin()
               } else {
                 TaskNotify()
               }
