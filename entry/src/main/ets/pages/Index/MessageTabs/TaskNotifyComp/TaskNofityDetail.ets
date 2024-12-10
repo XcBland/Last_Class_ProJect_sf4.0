@@ -1,9 +1,10 @@
 import { HmLoading, HmSkeleton } from 'swift_common';
-import { getMessage, getRead, getReadOnly } from '../../../../api/message';
+import { getMessage, getRead, getReadOnly } from '../../../../api';
 import { MessageInfo, MessageParams, MessageParamsModel } from '../../../../models';
 import { vibrator } from '@kit.SensorServiceKit';
 import { TaskInfo } from './TaskInfo';
 
+// 任务通知详情
 @Component
 export struct TaskNofityDetail {
   @State messageList: MessageInfo[] = [] //返回的数据类型
@@ -119,10 +120,10 @@ export struct TaskNofityDetail {
     }
   }
 
-  /*只读取一个*/
+  /*只已读一个*/
   async onReadOnly(item: MessageInfo) {
     try {
-      await getReadOnly(item.id)
+      await getReadOnly(item.id) // 只读一个（已读）通过id
       item.isRead = 1
       this.messageList = [...this.messageList]
 

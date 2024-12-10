@@ -1,6 +1,7 @@
 import dayjs from "@hview/dayjs"
 import { MessageInfo, MessageInfoModel } from "../../../../models"
 
+// 任务信息组件
 @Component
 export struct TaskInfo {
   taskInfo: MessageInfoModel = new MessageInfoModel({} as MessageInfo)

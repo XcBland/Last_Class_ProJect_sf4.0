@@ -1,8 +1,8 @@
-import dayjs from "@hview/dayjs"
-import { MessageInfo, MessageInfoModel } from "../../../../models/message"
-import { router } from "@kit.ArkUI"
-import { getReadOnly } from "../../../../api/message"
+import dayjs from '@hview/dayjs'
+import { MessageInfo, MessageInfoModel } from '../../../../models/message'
+import { router } from '@kit.ArkUI'
 
+// 公告列表组件
 @Component
 export struct Annoucements {
   @State messageInfoModel: MessageInfoModel = new MessageInfoModel({} as MessageInfo)

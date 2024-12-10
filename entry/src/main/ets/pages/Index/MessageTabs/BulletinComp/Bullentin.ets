@@ -2,16 +2,16 @@ import { HmLoading, HmSkeleton } from 'swift_common'
 import { MessageInfo, MessageParams, MessageParamsModel } from '../../../../models'
 import { vibrator } from '@kit.SensorServiceKit'
 import { Annoucements } from './Annoucements'
-import { getMessage, getRead, getReadOnly } from '../../../../api/message'
+import { getMessage, getRead, getReadOnly } from '../../../../api'
 
-
+// 公告栏
 @Component
 export struct Bullentin {
   @State messageList: MessageInfo[] = [] //返回的数据类型
   @State queryParams: MessageParams = new MessageParamsModel({
-    contentType: '200',
-    page: 1,
-    pageSize: 2
+    contentType: '200', //公告类型
+    page: 1,  //页码
+    pageSize: 2 //每页条数
   } as MessageParams) //查询的参数
   allPage: number = 1 //总页数
   @State loading: boolean = false //是否正在加载数据
@@ -21,14 +21,14 @@ export struct Bullentin {
   @State reset: boolean = false //是否重置查询条件
   layer: CustomDialogController = new CustomDialogController({
     builder: HmLoading({ loadingText: '正在搜索中，请稍后...' }),
-    customStyle: true,
-    autoCancel: true,
-    alignment: DialogAlignment.Center
+    customStyle: true,  //自定义样式
+    autoCancel: true,  //自动取消
+    alignment: DialogAlignment.Center //居中显示
   }) //弹窗控制器
 
   //获取任务列表数据
   async getMessageList(append: boolean) {
-    const result = await getMessage(this.queryParams)
+    const result = await getMessage(this.queryParams) //获取数据
     this.allPage = parseInt(result.pages) //总页数
     if (append) {
       this.messageList = this.messageList.concat(result.items || []) //合并数据
@@ -154,12 +154,12 @@ export struct Bullentin {
               ListItem() {
                 //公告卡片
                 Annoucements({
-                  messageInfoModel: item,
+                  messageInfoModel: item, //公告信息
                   onRecord: () => {
-                    this.onFlush()
+                    this.onFlush()  //清空已读
                   },
                   onReadOnly: () => {
-                    this.onReadOnly(item)
+                    this.onReadOnly(item)  //单个已读
                   }
                 })
               }
@@ -176,8 +176,9 @@ export struct Bullentin {
         }
         .width('100%')
         .height('100%')
-        .scrollBar(BarState.Off)
+        .scrollBar(BarState.Off)  //关闭滚动条
         .onReachEnd(async () => {
+          // 通过页码判断是否有更多数据
           if (this.allPage >= this.queryParams.page) {
             if (!this.loading) {
               this.loading = true //开始加载数据
@@ -185,13 +186,6 @@ export struct Bullentin {
               this.loading = this.allPage < this.queryParams.page ? true : false //如果没有更多数据了，则停止加载
             }
           }
-          //   this.loading = true //开始加载数据
-          //   if (this.page < this.allPage && this.refreshing) {
-          //     await this.getMessageList(true)
-          //   }
-          //   if (this.page !== this.allPage) {
-          //     this.loading = false //如果没有更多数据了，则停止加载
-          //   }
         })
       }
       .onStateChange((status: RefreshStatus) => {
